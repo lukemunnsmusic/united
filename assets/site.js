@@ -62,12 +62,13 @@ function loadNightsAnimation(url){
 
 // Reveal on the displayed image's load event: no preloaded animation consuming frames.
 function createNightsPlayback(art,motion){
-  var still=art.getAttribute('src'), objectURL=null, generation=0;
+  var still=art.getAttribute('src'), objectURL=null, generation=0, timeout=null;
+  function clearWait(){clearTimeout(timeout);timeout=null;}
   function release(){if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}}
   function showStill(fade){
     var run=++generation;
-    art.onload=null;
-    art.classList.remove('is-fallback');
+    clearWait();art.onload=null;
+    art.classList.remove('is-loading','is-fallback');
     function reveal(){
       if(run!==generation) return;
       if(fade && !motion.matches) art.classList.add('is-fallback');
@@ -80,12 +81,15 @@ function createNightsPlayback(art,motion){
   function play(){
     if(motion.matches){showStill(false);return;}
     var run=++generation;
-    art.onload=null;art.classList.remove('is-ready','is-fallback');
+    clearWait();art.onload=null;art.classList.remove('is-ready','is-fallback');
+    art.classList.add('is-loading');
+    timeout=setTimeout(function(){if(run===generation) showStill(true);},4000);
     loadNightsAnimation(art.dataset.animation).then(function(blob){
       if(run!==generation || motion.matches) return;
       release();objectURL=URL.createObjectURL(blob);
       art.onload=function(){
         if(run!==generation || motion.matches) return;
+        clearWait();art.classList.remove('is-loading');
         art.classList.add('is-ready');art.onload=null;
       };
       art.src=objectURL;
