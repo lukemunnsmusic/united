@@ -66,6 +66,7 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme=""):
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">{font}
 <link rel="icon" href="https://images.squarespace-cdn.com/content/v1/6a6464a7513b006c5a13f402/e97d65ae-8eb5-45a3-b177-e178b9c9b715/favicon.ico">
+<script>document.documentElement.classList.add('nights-motion');</script>
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body class="{theme}">
