@@ -1,47 +1,48 @@
-// UNITED Nights site behaviour: mobile menu, reveal on scroll, forms.
-document.documentElement.classList.add('js');
+// UNITED Nights site behaviour, matching the Squarespace site:
+// fixed transparent header that hides on scroll down and returns solid on scroll up,
+// full-screen mobile menu, and forms.
+
+// Header "scroll back"
+(function(){
+  var h=document.querySelector('.site-head'); if(!h) return;
+  var last=window.scrollY;
+  function onScroll(){
+    var y=window.scrollY;
+    if(y<=10){h.classList.remove('hidden','solid');}
+    else if(y>last && y>h.offsetHeight){h.classList.add('hidden');h.classList.add('solid');}
+    else if(y<last){h.classList.remove('hidden');h.classList.add('solid');}
+    last=y;
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+})();
 
 // Mobile menu
 (function(){
-  var b=document.querySelector('.burger'), m=document.querySelector('.menu');
-  if(!b||!m) return;
+  var b=document.querySelector('.burger'); if(!b) return;
   b.addEventListener('click',function(){
-    var open=m.classList.toggle('open');
+    var open=document.body.classList.toggle('menu-open');
     b.setAttribute('aria-expanded',open?'true':'false');
+    document.documentElement.style.overflow=open?'hidden':'';
   });
 })();
 
-// Reveal on scroll
-(function(){
-  var els=document.querySelectorAll('.rv');
-  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return;}
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{rootMargin:'0px 0px -8% 0px'});
-  els.forEach(function(e){io.observe(e)});
-})();
-
-// Forms. FORM_ENDPOINT is empty until Luke decides where submissions go
-// (Hub leads or email). Until then the form is validated and shows a notice,
-// and nothing is sent anywhere.
-var FORM_ENDPOINT = '';
-document.querySelectorAll('form.lead').forEach(function(f){
+// Forms. FORM_ENDPOINT stays empty until Luke decides where submissions go
+// (Hub leads or email). Until then forms validate and show a notice, and nothing is sent.
+var FORM_ENDPOINT='';
+document.querySelectorAll('form.sq').forEach(function(f){
   f.addEventListener('submit',function(ev){
     ev.preventDefault();
     var note=f.querySelector('.form-note');
-    if(f.querySelector('.hp input').value){return;} // spam trap
+    if(f.querySelector('.hp input').value) return; // spam trap
     if(!f.checkValidity()){f.reportValidity();return;}
     var data=Object.fromEntries(new FormData(f).entries());
     delete data.website;
     data.form=f.dataset.form; data.page=location.pathname; data.sent_at=new Date().toISOString();
-    if(!FORM_ENDPOINT){
-      note.className='form-note';
-      note.textContent='Preview only: this form is not connected yet, so nothing was sent.';
-      return;
-    }
+    if(!FORM_ENDPOINT){note.textContent='Preview only: this form is not connected yet, so nothing was sent.';return;}
     var btn=f.querySelector('button'); btn.disabled=true;
     fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
-      .then(function(r){if(!r.ok) throw new Error(r.status);
-        f.reset(); note.className='form-note ok'; note.textContent=f.dataset.thanks;})
-      .catch(function(){note.className='form-note'; note.textContent='Something went wrong. Please email hello@unitednights.com.';})
+      .then(function(r){if(!r.ok) throw new Error(r.status); f.reset(); note.textContent=f.dataset.thanks;})
+      .catch(function(){note.textContent='Something went wrong. Please email hello@unitednights.com.';})
       .finally(function(){btn.disabled=false;});
   });
 });
