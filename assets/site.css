@@ -92,7 +92,7 @@ strong{font-weight:700}
 .hero{min-height:100vh;min-height:100svh;align-items:center;justify-content:center;background:#000}
 .hero{padding-top:clamp(83px, calc(76.686px + 1.619vw), 100px)}
 .hero .logo-big{width:43.4%;max-width:625px;height:auto}
-@media (max-width:767px){.hero .logo-big{width:calc(100% - 46px)}}
+@media (max-width:767px){.hero{padding-top:0;padding-bottom:58px}.hero .logo-big{width:calc(100% - 46px)}.join{padding-top:63px;padding-bottom:58px}.join .c-wide{margin-bottom:12px!important}}
 .intro{padding-block:clamp(33.000px, calc(24.086px + 2.2857vw), 57.000px)}
 .intro h2{margin-bottom:32px}
 .join{min-height:565px;align-items:flex-start;padding-block:48px 47px;flex-direction:column}
@@ -142,7 +142,7 @@ form.sq .check input:checked::after{content:"";width:8px;height:8px;background:#
 .dark .btn{color:var(--soft)}
 .form-note{margin:16px 0 0;font-size:14.272px}
 .form-note:empty{display:none}
-@media (max-width:767px){form.sq .two{grid-template-columns:1fr}}
+form.sq .two{column-gap:10px}
 
 /* ---------- stories list (alternating side by side, square images) ---------- */
 .stories{padding:clamp(99.000px, calc(83.029px + 4.0952vw), 142.000px) var(--pad) clamp(80.000px, calc(50.657px + 7.5238vw), 159.000px)}
@@ -179,12 +179,12 @@ form.sq .check input:checked::after{content:"";width:8px;height:8px;background:#
 .pager .row{display:flex}
 
 /* ---------- footer ---------- */
-.site-foot{background:var(--footer);color:var(--white);text-align:center;padding:48px var(--pad) 87px;font-size:14.272px;line-height:1.8}
-.site-foot .un{width:216px;height:auto;margin:0 auto 11px}
+.site-foot{background:var(--footer);color:var(--white);text-align:center;padding:clamp(48px, calc(52.114px + -0.2857vw), 51px) var(--pad) clamp(55px, calc(43.114px + 3.0476vw), 87px);font-size:14.272px;line-height:1.8}
+.site-foot .un{width:clamp(166px, calc(147.429px + 4.7619vw), 216px);height:auto;margin:0 auto clamp(13px, calc(43.171px + -2.0952vw), 35px)}
 .site-foot .txt{max-width:444px;margin:0 auto}
 .site-foot p{margin:0}
 .site-foot p + p{margin-top:16px}
 .site-foot a{color:var(--soft);text-decoration:underline}
 .site-foot .links{margin-top:27px}
-.site-foot .lm{display:block;width:330px;max-width:100%;margin:15px auto 0}
-.site-foot .lm img{height:29px;width:auto;margin:0 auto}
+.site-foot .lm{display:block;width:330px;max-width:100%;margin:clamp(15px, calc(43.800px + -2.0000vw), 36px) auto 0}
+.site-foot .lm img{height:clamp(29px, calc(42.714px + -0.9524vw), 39px);width:auto;margin:0 auto}
