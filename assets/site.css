@@ -49,10 +49,9 @@ strong{font-weight:700}
 
 .burger{display:none;background:none;border:0;padding:0;color:inherit;cursor:pointer;width:50px;height:37px;position:relative;z-index:60}
 .burger span{position:absolute;left:12px;right:12px;height:1px;background:currentColor;transition:transform .25s,opacity .25s}
-.burger span:nth-child(1){top:12px}.burger span:nth-child(2){top:18px}.burger span:nth-child(3){top:24px}
-.menu-open .burger span:nth-child(1){transform:translateY(6px) rotate(45deg)}
-.menu-open .burger span:nth-child(2){opacity:0}
-.menu-open .burger span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.burger span:nth-child(1){top:14px}.burger span:nth-child(2){top:22px}
+.menu-open .burger span:nth-child(1){transform:translateY(4px) rotate(45deg)}
+.menu-open .burger span:nth-child(2){transform:translateY(-4px) rotate(-45deg)}
 .menu-panel{position:fixed;inset:0;z-index:55;background:var(--white);color:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:23px;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
 .menu-panel a{font-size:33.15px;line-height:1;text-decoration:none}
 .menu-panel .ig{position:absolute;bottom:39px}

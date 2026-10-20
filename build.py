@@ -75,7 +75,7 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme=""):
   <div class="row">
     <a class="logo" href="/" aria-label="UNITED Nights home"><img src="{HEAD_LOGO}" alt="UNITED Nights" width="210" height="42"></a>
     <nav aria-label="Site">{nav}<a class="ig" href="{IG}" aria-label="Instagram" target="_blank" rel="noopener">{IG_SVG}</a></nav>
-    <button class="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <button class="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
   </div>
 </header>
 <div class="menu-panel" aria-label="Menu">{mnav}<a class="ig" href="{IG}" aria-label="Instagram" target="_blank" rel="noopener">{IG_SVG}</a></div>
