@@ -126,7 +126,7 @@ function loadNightsAnimation(url){
   }
 })();
 
-// Repeat the same handwriting when the closing mark enters view.
+// Draw the NIGHTS part of the existing footer lockup when it enters view.
 (function(){
   var art=document.querySelector('.closing-script');
   if(!art || !('IntersectionObserver' in window)) return;

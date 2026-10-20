@@ -22,7 +22,6 @@ ROOT = pathlib.Path(__file__).parent
 SITE = "https://unitednights.com"
 CDN = "https://images.squarespace-cdn.com/content/v1/6a6464a7513b006c5a13f402"
 HEAD_LOGO = CDN + "/3a0d35ff-cf40-4f06-9450-b90b574a8301/UNITED-Nights-Logo.png?format=1500w"
-FOOT_LOGO = CDN + "/5ed91b64-1ef2-4ad3-8be6-96c09ab66241/UNITED-Nights-logo-wht.png?format=500w"
 LM_LOGO = CDN + "/2416aef0-200d-46e7-bf0f-f6e0e8497199/LUKE-MUNNS-LOGO-footer.png?format=750w"
 OG_DEFAULT = "https://static1.squarespace.com/static/6a6464a7513b006c5a13f402/t/6a8668b331e02f46bf595841/1787193523022/united-nights-facebook.jpg?format=1500w"
 IG = "https://instagram.com/unitednights.co"
@@ -82,7 +81,10 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme=""):
 {body}
 </main>
 <footer class="site-foot">
-  <img class="un" src="{FOOT_LOGO}" alt="UNITED Nights" width="216" height="43" loading="lazy">
+  <div class="un footer-mark" role="img" aria-label="UNITED Nights">
+    <img class="united-word" src="/assets/united-wordmark-white.png" alt="" aria-hidden="true" width="1000" height="200" loading="lazy">
+    <img class="closing-script" src="/assets/nights-final.png" data-animation="/assets/nights-original.webp" alt="" aria-hidden="true" width="1216" height="499" loading="lazy">
+  </div>
   <div class="txt">
     <p>&copy; {datetime.date.today().year} UNITED Nights. All rights reserved.</p>
     <p>UNITED Nights is an independent project led by Luke Munns, signed to <a href="https://worshipcollective.co">WorshipCollective.co</a>. It is not affiliated with Hillsong.</p>
@@ -182,9 +184,6 @@ def home():
   <div class="frame" style="width:100%">
     <div class="col c-wide" style="margin-bottom:31px"><p class="large"><strong>THE JOURNEY IS JUST BEGINNING</strong></p><p>Receive occasional updates about new music, gatherings and what comes next.</p></div>
     <div class="col c-form">{form("signup", "JOIN THE JOURNEY", "<p>Thank you. You're now on the journey with us.</p>", dark=True)}</div>
-  </div>
-  <div class="closing-mark" role="img" aria-label="Nights">
-    <img class="closing-script" src="/assets/nights-final.png" data-animation="/assets/nights-original.webp" alt="" aria-hidden="true" width="1216" height="499" loading="lazy">
   </div>
 </section>"""
     page("/", "UNITED Nights | Worship Gatherings & New Music", body,
