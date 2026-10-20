@@ -215,11 +215,12 @@ def stories():
     for i, (slug, m, body) in enumerate(posts):
         newer = posts[i - 1] if i > 0 else None
         older = posts[i + 1] if i + 1 < len(posts) else None
+        # Squarespace convention: "Previous" (left) is the newer story, "Next" (right) the older one.
         nav = ""
-        if older:
-            nav += f'<a class="prev" href="/stories/{older[0]}">{CARET_L}<span><span class="hp">Previous</span><h2>{e(older[1]["title"])}</h2></span></a>'
         if newer:
-            nav += f'<a class="next" href="/stories/{newer[0]}"><span><span class="hp">Next</span><h2>{e(newer[1]["title"])}</h2></span>{CARET_R}</a>'
+            nav += f'<a class="prev" href="/stories/{newer[0]}">{CARET_L}<span><span class="hp">Previous</span><h2>{e(newer[1]["title"])}</h2></span></a>'
+        if older:
+            nav += f'<a class="next" href="/stories/{older[0]}"><span><span class="hp">Next</span><h2>{e(older[1]["title"])}</h2></span>{CARET_R}</a>'
         page(f"/stories/{slug}", f"{m['title']} — UNITED Nights", f"""<article class="post"><div class="inner">
   <h1 class="title">{e(m['title'])}</h1>
   <h4>{e(m['subtitle'])}</h4>
@@ -236,7 +237,7 @@ def contact():
   <div class="frame" style="width:100%"><div class="col c-banner"><h1>CONTACT</h1><h3>Bookings, partnerships, <br>collaborations + enquiries</h3></div></div>
 </section>
 <section class="block"><div class="frame">
-  <div class="col c-contact-head" style="margin-bottom:12px"><h3>THE NEXT CHAPTER STARTS<br>WITH A CONVERSATION.</h3></div>
+  <div class="col c-contact-head" style="margin-bottom:23px"><h3>THE NEXT CHAPTER STARTS<br>WITH A CONVERSATION.</h3></div>
   <div class="col c-contact-form">{form("contact", "Submit", "Thank you. We've received your message and will be in touch.", message=True)}</div>
 </div></section>"""
     page("/contact", "CONTACT — UNITED Nights", body, "")
