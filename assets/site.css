@@ -90,8 +90,7 @@ strong{font-weight:700}
 /* home */
 .hero{min-height:100vh;min-height:100svh;align-items:center;justify-content:center;background:#000}
 .hero{padding-top:clamp(83px, calc(76.686px + 1.619vw), 100px)}
-.hero .logo-big{width:43.4%;max-width:625px;height:auto}
-@media (max-width:767px){.hero{padding-top:0;padding-bottom:58px}.hero .logo-big{width:calc(100% - 46px)}.join.join{padding-top:63px;padding-bottom:58px}.join .c-wide{margin-bottom:12px!important}}
+@media (max-width:767px){.hero{padding-top:0;padding-bottom:58px}.join.join{padding-top:63px;padding-bottom:58px}.join .c-wide{margin-bottom:12px!important}}
 .intro{padding-block:clamp(33.000px, calc(24.086px + 2.2857vw), 57.000px)}
 .intro h2{margin-bottom:32px}
 .join{min-height:565px;align-items:flex-start;padding-block:48px 47px;flex-direction:column}
@@ -191,3 +190,27 @@ form.sq .two{column-gap:10px}
 .site-foot .links{margin-top:27px}
 .site-foot .lm{display:block;width:330px;max-width:100%;margin:clamp(15px, calc(43.800px + -2.0000vw), 36px) auto 0}
 .site-foot .lm img{height:clamp(29px, calc(42.714px + -0.9524vw), 39px);width:auto;margin:0 auto}
+
+/* Original hero artwork coordinates: 1200 x 595. Both layers share this canvas.
+   UNITED ink: (1,1)-(1199,232); NIGHTS ink: (231,245)-(1058,582).
+   The supplied UNITED PNG has transparent padding: (1,4)-(999,196). */
+.hero{padding-top:calc(4vw + 42px)}
+.hero .hero-mark{
+  /* Original 24-column grid: 11px gaps, 1600px content cap, 8 rows. */
+  --logo-grid-height:calc(min(1600px,94vw) * .172 + 77px);
+  width:min(calc((min(1600px,94vw) - 11px) / 2),calc(var(--logo-grid-height) * 1200 / 595));
+  aspect-ratio:1200 / 595;position:relative;flex:none;
+}
+.hero .hero-mark img{position:absolute;max-width:none;object-fit:fill;pointer-events:none}
+.hero .united-word{left:-0.0167001%;top:-0.6407563%;width:100.0334001%;height:40.4411765%}
+.hero .nights-script{left:19.25%;top:41.1764706%;width:68.9166667%;height:56.6386555%}
+@media(min-width:768px) and (max-width:900px){.hero{padding-top:calc(4vw + 103.44px)}}
+@media(max-width:767px){
+  /* Original mobile grid: 10 rows; logo spans 6. Centre is 70px above grid centre. */
+  .hero{padding-top:calc(12vw + 37px);padding-bottom:140px}
+  .hero .hero-mark{width:88%}
+}
+
+/* Keep background player chrome/errors out of the logo composition. */
+.hero #hero-background{opacity:0;transition:opacity .4s;filter:contrast(.8)}
+.hero #hero-background.is-playing{opacity:1}

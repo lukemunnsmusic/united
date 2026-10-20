@@ -22,7 +22,6 @@ ROOT = pathlib.Path(__file__).parent
 SITE = "https://unitednights.com"
 CDN = "https://images.squarespace-cdn.com/content/v1/6a6464a7513b006c5a13f402"
 HEAD_LOGO = CDN + "/3a0d35ff-cf40-4f06-9450-b90b574a8301/UNITED-Nights-Logo.png?format=1500w"
-HERO_LOGO = CDN + "/d2a214ac-598d-423f-b146-5b4c921c97a2/UNITED-Nights-logo-wht.png?format=2500w"
 FOOT_LOGO = CDN + "/5ed91b64-1ef2-4ad3-8be6-96c09ab66241/UNITED-Nights-logo-wht.png?format=500w"
 LM_LOGO = CDN + "/2416aef0-200d-46e7-bf0f-f6e0e8497199/LUKE-MUNNS-LOGO-footer.png?format=750w"
 OG_DEFAULT = "https://static1.squarespace.com/static/6a6464a7513b006c5a13f402/t/6a8668b331e02f46bf595841/1787193523022/united-nights-facebook.jpg?format=1500w"
@@ -159,8 +158,11 @@ def form(kind, button, thanks, message=False, dark=False):
 
 def home():
     body = f"""<section class="bleed hero dark">
-  <div class="media" aria-hidden="true"><iframe src="https://www.youtube.com/embed/hqK0pqV-c9c?autoplay=1&mute=1&loop=1&playlist=hqK0pqV-c9c&controls=0&playsinline=1&rel=0&disablekb=1&iv_load_policy=3&cc_load_policy=0" title="" tabindex="-1" allow="autoplay; encrypted-media"></iframe></div>
-  <img class="logo-big" src="{HERO_LOGO}" alt="UNITED Nights" width="671" height="134">
+  <div class="media" aria-hidden="true"><iframe id="hero-background" src="https://www.youtube.com/embed/hqK0pqV-c9c?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=hqK0pqV-c9c&controls=0&playsinline=1&rel=0&disablekb=1&iv_load_policy=3&cc_load_policy=0" title="" tabindex="-1" allow="autoplay; encrypted-media"></iframe></div>
+  <div class="hero-mark" role="img" aria-label="UNITED Nights">
+    <img class="united-word" src="/assets/united-wordmark-white.png" alt="" aria-hidden="true" width="1000" height="200" fetchpriority="high">
+    <img class="nights-script" src="/assets/nights-final.png" data-animation="/assets/nights-original.webp" alt="" aria-hidden="true" width="1216" height="499" fetchpriority="high">
+  </div>
 </section>
 <section class="intro"><div class="frame"><div class="col c-main">
   <h2><strong>A new chapter. A new BEGINNING. A new SOUND. </strong></h2>

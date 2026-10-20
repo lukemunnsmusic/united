@@ -48,3 +48,72 @@ document.querySelectorAll('form.sq').forEach(function(f){
       .finally(function(){btn.disabled=false;});
   });
 });
+
+
+// Original transparent handwriting frames, encoded once as WebP (no traced paths).
+// One image means one NIGHTS layer, including reduced motion and failed loads.
+(function(){
+  var art=document.querySelector('.hero .nights-script');
+  if(!art) return;
+  var still=art.getAttribute('src'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var blob=null, pending=null, objectURL=null, away=false, lastY=window.scrollY, generation=0;
+  function release(){
+    if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}
+  }
+  function showStill(){
+    generation++;
+    art.src=still;
+    release();
+  }
+  function replay(){
+    if(motion.matches) return;
+    var run=++generation;
+    // Cache bytes, but use a fresh URL to restart the single-play image reliably.
+    if(!pending) pending=fetch(art.dataset.animation).then(function(r){
+      if(!r.ok) throw new Error('Animation unavailable');
+      return r.blob();
+    }).then(function(value){blob=value;return value;}).catch(function(){pending=null;return null;});
+    pending.then(function(value){
+      if(!value || run!==generation || motion.matches) return;
+      release();
+      objectURL=URL.createObjectURL(blob);
+      art.src=objectURL;
+    });
+  }
+  art.addEventListener('error',function(){if(art.getAttribute('src')!==still) showStill();});
+  function onScroll(){
+    var y=window.scrollY, rect=art.parentElement.getBoundingClientRect();
+    if(rect.bottom<=0) away=true;
+    if(away && y<lastY && rect.bottom>rect.height*.35 && rect.top<window.innerHeight){
+      away=false;
+      replay();
+    }
+    lastY=y;
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  motion.addEventListener('change',function(){if(motion.matches) showStill();else replay();});
+  window.addEventListener('pageshow',function(e){if(e.persisted) replay();});
+  if(art.parentElement.getBoundingClientRect().bottom>0) replay();else away=true;
+})();
+
+// Reveal the decorative background only after YouTube confirms playback.
+// Unavailable/blocked video leaves the original black hero behind the logo.
+(function(){
+  var frame=document.getElementById('hero-background');
+  if(!frame) return;
+  function createPlayer(){
+    new YT.Player(frame,{events:{
+      onReady:function(e){e.target.mute();e.target.playVideo();},
+      onStateChange:function(e){frame.classList.toggle('is-playing',e.data===1);},
+      onError:function(){frame.classList.remove('is-playing');}
+    }});
+  }
+  if(window.YT && window.YT.Player) createPlayer();
+  else{
+    window.onYouTubeIframeAPIReady=createPlayer;
+    var script=document.createElement('script');
+    script.src='https://www.youtube.com/iframe_api';
+    script.async=true;
+    document.head.appendChild(script);
+  }
+})();
