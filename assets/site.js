@@ -28,10 +28,8 @@
 
 // Forms post to the Hub (lmm-hub /api/united/website-form): each submission becomes a UNITED
 // contact in the Hub, mirrors to the UNITED Google Sheet and emails hello@unitednights.com.
-// FORM_ENDPOINT stays empty until lmm-hub PR #106 is merged and live; until then forms
-// validate, show a preview notice and send nothing. Then set it to:
-// https://hub.lukemunnsmusic.com/api/united/website-form
-var FORM_ENDPOINT='';
+// If FORM_ENDPOINT is ever emptied, forms validate, show a preview notice and send nothing.
+var FORM_ENDPOINT='https://hub.lukemunnsmusic.com/api/united/website-form';
 document.querySelectorAll('form.sq').forEach(function(f){
   f.addEventListener('submit',function(ev){
     ev.preventDefault();
