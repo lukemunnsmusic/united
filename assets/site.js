@@ -50,6 +50,16 @@ document.querySelectorAll('form.sq').forEach(function(f){
 });
 
 
+// Share one animation download between the opening and closing marks.
+var nightsAnimationRequest=null;
+function loadNightsAnimation(url){
+  if(!nightsAnimationRequest) nightsAnimationRequest=fetch(url).then(function(r){
+    if(!r.ok) throw new Error('Animation unavailable');
+    return r.blob();
+  }).catch(function(error){nightsAnimationRequest=null;throw error;});
+  return nightsAnimationRequest;
+}
+
 // Original transparent handwriting frames, encoded once as WebP (no traced paths).
 // One image means one NIGHTS layer, including reduced motion and failed loads.
 (function(){
@@ -69,10 +79,8 @@ document.querySelectorAll('form.sq').forEach(function(f){
     if(motion.matches) return;
     var run=++generation;
     // Cache bytes, but use a fresh URL to restart the single-play image reliably.
-    if(!pending) pending=fetch(art.dataset.animation).then(function(r){
-      if(!r.ok) throw new Error('Animation unavailable');
-      return r.blob();
-    }).then(function(value){blob=value;return value;}).catch(function(){pending=null;return null;});
+    if(!pending) pending=loadNightsAnimation(art.dataset.animation)
+      .then(function(value){blob=value;return value;}).catch(function(){pending=null;return null;});
     pending.then(function(value){
       if(!value || run!==generation || motion.matches) return;
       release();
@@ -116,4 +124,113 @@ document.querySelectorAll('form.sq').forEach(function(f){
     script.async=true;
     document.head.appendChild(script);
   }
+})();
+
+// Draw the NIGHTS part of the existing footer lockup when it enters view.
+(function(){
+  var art=document.querySelector('.closing-script');
+  if(!art || !('IntersectionObserver' in window)) return;
+  var still=art.getAttribute('src'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var objectURL=null, generation=0, inView=false;
+  function release(){if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}}
+  function showStill(){generation++;art.src=still;art.classList.remove('is-waiting');release();}
+  function play(){
+    if(motion.matches) return;
+    var run=++generation;
+    loadNightsAnimation(art.dataset.animation).then(function(blob){
+      if(run!==generation || motion.matches) return;
+      release();objectURL=URL.createObjectURL(blob);art.src=objectURL;
+      art.classList.remove('is-waiting');
+    }).catch(function(){if(run===generation) showStill();});
+  }
+  art.addEventListener('error',function(){if(art.getAttribute('src')!==still) showStill();});
+  if(!motion.matches) art.classList.add('is-waiting');
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting && !inView) play();
+      inView=entry.isIntersecting;
+    });
+  },{threshold:.25});
+  observer.observe(art);
+  motion.addEventListener('change',function(){if(motion.matches) showStill();else if(inView) play();});
+})();
+
+// Progressive enhancement: content remains visible with no JS or reduced motion.
+(function(){
+  var motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  if(motion.matches || !('IntersectionObserver' in window)) return;
+  var targets=document.querySelectorAll('.intro h2,.intro p,.join .c-wide>p,.post h1,.post h2,.post h3,.post h4,.post p,.story h1,.story p,.legal h4,.legal p');
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(!entry.isIntersecting) return;
+      entry.target.classList.remove('is-pending','divider-pending');
+      observer.unobserve(entry.target);
+    });
+  },{threshold:.1,rootMargin:'0px 0px -20px 0px'});
+  targets.forEach(function(el){
+    // Leave content already in view alone; reveal only incoming text.
+    if(el.getBoundingClientRect().top<window.innerHeight) return;
+    el.classList.add('scroll-reveal','is-pending');observer.observe(el);
+  });
+  document.querySelectorAll('.fine-divider').forEach(function(el){
+    if(el.getBoundingClientRect().top<window.innerHeight) return;
+    el.classList.add('divider-pending');observer.observe(el);
+  });
+  motion.addEventListener('change',function(){
+    if(!motion.matches) return;
+    observer.disconnect();
+    document.querySelectorAll('.is-pending,.divider-pending').forEach(function(el){el.classList.remove('is-pending','divider-pending');});
+  });
+})();
+
+// The opening cue retires as soon as the visitor starts scrolling.
+(function(){
+  var cue=document.querySelector('.scroll-cue');
+  if(!cue) return;
+  function retire(){
+    if(window.scrollY<=8) return;
+    cue.classList.add('is-gone');cue.setAttribute('aria-hidden','true');cue.tabIndex=-1;
+    window.removeEventListener('scroll',retire);
+  }
+  window.addEventListener('scroll',retire,{passive:true});retire();
+})();
+
+// Lightweight background-only parallax, with static no-JS/reduced-motion fallbacks.
+(function(){
+  var section=document.querySelector('.join'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  if(!section) return;
+  var media=section.querySelector('.media'), image=media && media.querySelector('img'), frame=0, progress=null;
+  if(!image) return;
+  function update(){
+    frame=0;
+    if(motion.matches) return;
+    var rect=section.getBoundingClientRect(), height=window.innerHeight;
+    if(rect.bottom<0 || rect.top>height || !image.naturalWidth) return;
+    // Match Squarespace's 30% intensity / 90-degree background effect.
+    // Normalize to the available scroll range, including the nearby page end.
+    var top=rect.top+window.scrollY, after=document.documentElement.scrollHeight-top-rect.height;
+    var before=Math.min(top,height), end=Math.min(after,height);
+    var range=before+rect.height+end-height;
+    var target=Math.max(0,Math.min(1,range>0?(before-rect.top)/range:.5));
+    var delta=progress===null?0:target-progress;
+    progress=progress===null || delta<.01?target:progress+delta*.1;
+    var imageHeight=Math.max(rect.height,rect.width*image.naturalHeight/image.naturalWidth);
+    var offset=(.5-progress)*imageHeight*.15/.85;
+    media.style.setProperty('--parallax-height',imageHeight+'px');
+    media.style.setProperty('--parallax-width',(imageHeight*image.naturalWidth/image.naturalHeight)+'px');
+    media.style.setProperty('--parallax-y',offset.toFixed(2)+'px');
+    if(target-progress>=.01) frame=requestAnimationFrame(update);
+  }
+  function schedule(){if(!motion.matches && !frame) frame=requestAnimationFrame(update);}
+  function configure(){
+    section.classList.toggle('has-parallax',!motion.matches);
+    if(motion.matches){cancelAnimationFrame(frame);frame=0;progress=null;media.style.removeProperty('--parallax-y');}
+    else schedule();
+  }
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule,{passive:true});
+  window.addEventListener('pageshow',schedule);
+  image.addEventListener('load',schedule);
+  motion.addEventListener('change',configure);
+  configure();
 })();
