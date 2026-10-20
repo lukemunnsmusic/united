@@ -199,26 +199,38 @@ function loadNightsAnimation(url){
 (function(){
   var section=document.querySelector('.join'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
   if(!section) return;
-  var media=section.querySelector('.media'), frame=0;
-  if(!media) return;
+  var media=section.querySelector('.media'), image=media && media.querySelector('img'), frame=0, progress=null;
+  if(!image) return;
   function update(){
     frame=0;
     if(motion.matches) return;
     var rect=section.getBoundingClientRect(), height=window.innerHeight;
-    if(rect.bottom<0 || rect.top>height) return;
-    var space=parseFloat(getComputedStyle(section).getPropertyValue('--parallax-space'))||0;
-    var offset=Math.max(-space,Math.min(space,(height/2-rect.top-rect.height/2)*.12));
+    if(rect.bottom<0 || rect.top>height || !image.naturalWidth) return;
+    // Match Squarespace's 30% intensity / 90-degree background effect.
+    // Normalize to the available scroll range, including the nearby page end.
+    var top=rect.top+window.scrollY, after=document.documentElement.scrollHeight-top-rect.height;
+    var before=Math.min(top,height), end=Math.min(after,height);
+    var range=before+rect.height+end-height;
+    var target=Math.max(0,Math.min(1,range>0?(before-rect.top)/range:.5));
+    var delta=progress===null?0:target-progress;
+    progress=progress===null || delta<.01?target:progress+delta*.1;
+    var imageHeight=Math.max(rect.height,rect.width*image.naturalHeight/image.naturalWidth);
+    var offset=(.5-progress)*imageHeight*.15/.85;
+    media.style.setProperty('--parallax-height',imageHeight+'px');
+    media.style.setProperty('--parallax-width',(imageHeight*image.naturalWidth/image.naturalHeight)+'px');
     media.style.setProperty('--parallax-y',offset.toFixed(2)+'px');
+    if(target-progress>=.01) frame=requestAnimationFrame(update);
   }
   function schedule(){if(!motion.matches && !frame) frame=requestAnimationFrame(update);}
   function configure(){
     section.classList.toggle('has-parallax',!motion.matches);
-    if(motion.matches){cancelAnimationFrame(frame);frame=0;media.style.removeProperty('--parallax-y');}
+    if(motion.matches){cancelAnimationFrame(frame);frame=0;progress=null;media.style.removeProperty('--parallax-y');}
     else schedule();
   }
   window.addEventListener('scroll',schedule,{passive:true});
   window.addEventListener('resize',schedule,{passive:true});
   window.addEventListener('pageshow',schedule);
+  image.addEventListener('load',schedule);
   motion.addEventListener('change',configure);
   configure();
 })();

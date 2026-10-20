@@ -247,7 +247,6 @@ form.sq .two{column-gap:10px}
 
 /* Move only the existing monstera image; keep signup content in normal flow. */
 @media screen and (prefers-reduced-motion:no-preference){
-  .join.has-parallax{--parallax-space:48px}
-  .join.has-parallax .media{inset:calc(-1 * var(--parallax-space)) 0;transform:translate3d(0,var(--parallax-y,0px),0)}
+  .join.has-parallax .media img{position:absolute;left:50%;top:50%;max-width:none;width:var(--parallax-width,100%);height:var(--parallax-height,100%);transform:translate(-50%,-50%) translateY(var(--parallax-y,0px)) scale(1.1764705882)}
 }
 @media print{.scroll-reveal.is-pending{opacity:1;transform:none}}
