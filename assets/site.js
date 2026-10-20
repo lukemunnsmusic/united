@@ -26,8 +26,11 @@
   });
 })();
 
-// Forms. FORM_ENDPOINT stays empty until Luke decides where submissions go
-// (Hub leads or email). Until then forms validate and show a notice, and nothing is sent.
+// Forms post to the Hub (lmm-hub /api/united/website-form): each submission becomes a UNITED
+// contact in the Hub, mirrors to the UNITED Google Sheet and emails hello@unitednights.com.
+// FORM_ENDPOINT stays empty until lmm-hub PR #106 is merged and live; until then forms
+// validate, show a preview notice and send nothing. Then set it to:
+// https://hub.lukemunnsmusic.com/api/united/website-form
 var FORM_ENDPOINT='';
 document.querySelectorAll('form.sq').forEach(function(f){
   f.addEventListener('submit',function(ev){
@@ -41,8 +44,9 @@ document.querySelectorAll('form.sq').forEach(function(f){
     if(!FORM_ENDPOINT){note.textContent='Preview only: this form is not connected yet, so nothing was sent.';return;}
     var btn=f.querySelector('button'); btn.disabled=true;
     fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
-      .then(function(r){if(!r.ok) throw new Error(r.status); f.reset(); note.textContent=f.dataset.thanks;})
-      .catch(function(){note.textContent='Something went wrong. Please email hello@unitednights.com.';})
+      .then(function(r){return r.json().catch(function(){return {};}).then(function(j){if(!r.ok){var e=new Error(j.error||'');e.server=true;throw e;}});})
+      .then(function(){f.reset(); f.hidden=true; var done=f.nextElementSibling; if(done) done.hidden=false;})
+      .catch(function(err){note.textContent=(err&&err.server&&err.message)||'Something went wrong. Please email hello@unitednights.com.';})
       .finally(function(){btn.disabled=false;});
   });
 });

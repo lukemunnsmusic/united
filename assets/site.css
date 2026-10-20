@@ -121,6 +121,7 @@ strong{font-weight:700}
 
 /* ---------- forms ---------- */
 form.sq{display:grid;gap:0}
+form.sq[hidden]{display:none}
 form.sq fieldset{border:0;margin:0 0 20px;padding:0}
 form.sq legend{font-size:16px;line-height:32px;padding:0;margin-bottom:1px}
 form.sq .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}

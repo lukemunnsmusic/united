@@ -27,8 +27,8 @@ FOOT_LOGO = CDN + "/5ed91b64-1ef2-4ad3-8be6-96c09ab66241/UNITED-Nights-logo-wht.
 LM_LOGO = CDN + "/2416aef0-200d-46e7-bf0f-f6e0e8497199/LUKE-MUNNS-LOGO-footer.png?format=750w"
 OG_DEFAULT = "https://static1.squarespace.com/static/6a6464a7513b006c5a13f402/t/6a8668b331e02f46bf595841/1787193523022/united-nights-facebook.jpg?format=1500w"
 IG = "https://instagram.com/unitednights.co"
-# Aktiv Grotesk (Adobe Fonts). Set ADOBE_KIT to the kit id from Luke's own Adobe Fonts web project;
-# until then the browser falls back to Helvetica Neue / Arial.
+# Aktiv Grotesk loads from Luke's own Adobe Fonts web project (licensed for these domains at fonts.adobe.com).
+# Never add font files to this public repo.
 ADOBE_KIT = "jcd6pcn"  # Adobe Fonts web project "UNITED Nights website" on Luke's Adobe account
 
 NAV = [("HOME", "/"), ("STORIES", "/stories"), ("CONTACT", "/contact")]
@@ -134,16 +134,11 @@ def blocks(body, heading="h3"):
     return "\n".join(out)
 
 
-def short_date(d):  # Squarespace style: 22/8/26
-    d = datetime.date.fromisoformat(d)
-    return f"{d.day}/{d.month}/{d.strftime('%y')}"
-
-
 def form(kind, button, thanks, message=False, dark=False):
     extra = """
     <div class="field"><label for="f-subject">SUBJECT<span class="req">(required)</span></label><input id="f-subject" type="text" name="subject" required></div>
     <div class="field"><label for="f-message">MESSAGE<span class="req">(required)</span></label><textarea id="f-message" name="message" required></textarea></div>""" if message else ""
-    return f"""<form class="sq" data-form="{kind}" data-thanks="{e(thanks)}" novalidate>
+    return f"""<form class="sq" data-form="{kind}" novalidate>
     <fieldset>
       <legend>NAME</legend>
       <div class="two">
@@ -156,7 +151,8 @@ def form(kind, button, thanks, message=False, dark=False):
     <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
     <button class="btn" type="submit">{button}</button>
     <p class="form-note" role="status" aria-live="polite"></p>
-  </form>"""
+  </form>
+  <div class="form-done" role="status" hidden>{thanks}</div>"""
 
 
 # ---------- pages ----------
@@ -182,7 +178,7 @@ def home():
   <div class="media" aria-hidden="true"><img src="{CDN}/7e289948-8475-493e-90b6-b7a68c406ac9/united-form-bg.jpg?format=2500w" alt="" loading="lazy"></div><div class="shade"></div>
   <div class="frame" style="width:100%">
     <div class="col c-wide" style="margin-bottom:31px"><p class="large"><strong>THE JOURNEY IS JUST BEGINNING</strong></p><p>Receive occasional updates about new music, gatherings and what comes next.</p></div>
-    <div class="col c-form">{form("signup", "JOIN THE JOURNEY", "Thank you. You're on the journey with us.", dark=True)}</div>
+    <div class="col c-form">{form("signup", "JOIN THE JOURNEY", "<p>Thank you. You're now on the journey with us.</p>", dark=True)}</div>
   </div>
 </section>"""
     page("/", "UNITED Nights | Worship Gatherings & New Music", body,
@@ -203,7 +199,6 @@ def stories():
   <article class="story">
     <a class="img" href="/stories/{slug}"><img src="{m['image']}?format=1500w" alt="{e(m['title'])}" loading="lazy"></a>
     <div>
-      <div class="meta"><time datetime="{m['date']}">{short_date(m['date'])}</time></div>
       <h1><a href="/stories/{slug}">{e(m['title'])}</a></h1>
       <p>{e(m['excerpt'])}</p>
       <a class="more" href="/stories/{slug}">Read More</a>
@@ -239,7 +234,7 @@ def contact():
 </section>
 <section class="block"><div class="frame">
   <div class="col c-contact-head" style="margin-bottom:clamp(12px, calc(7.914px + 1.0476vw), 23px)"><h3>THE NEXT CHAPTER STARTS<br>WITH A CONVERSATION.</h3></div>
-  <div class="col c-contact-form">{form("contact", "Submit", "Thank you. We've received your message and will be in touch.", message=True)}</div>
+  <div class="col c-contact-form">{form("contact", "Submit", '<p>Thank you!<br><br><a href="/"><strong>HOME</strong></a></p>', message=True)}</div>
 </div></section>"""
     page("/contact", "CONTACT — UNITED Nights", body, "")
 
