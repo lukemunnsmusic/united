@@ -2,11 +2,31 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/home", "destination": "/", "permanent": true },
-    { "source": "/contact-2", "destination": "/contact", "permanent": true },
-    { "source": "/story", "destination": "/history", "permanent": false }
-  ],
-  "rewrites": [
-    { "source": "/", "has": [{ "type": "host", "value": "history.unitednights.com" }], "destination": "/history" }
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "history.unitednights.com"
+        }
+      ],
+      "destination": "/history",
+      "permanent": false
+    },
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/contact-2",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/story",
+      "destination": "/history",
+      "permanent": false
+    }
   ]
 }
