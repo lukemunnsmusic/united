@@ -214,3 +214,34 @@ form.sq .two{column-gap:10px}
 /* Keep background player chrome/errors out of the logo composition. */
 .hero #hero-background{opacity:0;transition:opacity .4s;filter:contrast(.8)}
 .hero #hero-background.is-playing{opacity:1}
+
+/* A quiet second handwriting moment, within the existing closing section. */
+.closing-mark{width:min(320px,62vw);aspect-ratio:1216 / 499;margin:54px auto 5px;flex:none}
+.closing-script{width:100%;height:100%;object-fit:contain}
+.closing-script.is-waiting{visibility:hidden}
+
+/* Text keeps its natural position; only compositor properties animate. */
+.scroll-reveal{transition:opacity .65s ease,transform .65s cubic-bezier(.22,1,.36,1)}
+.scroll-reveal.is-pending{opacity:0;transform:translateY(8px)}
+.fine-divider{position:relative}
+.fine-divider::after{content:"";position:absolute;bottom:0;left:var(--pad);right:var(--pad);height:1px;background:currentColor;opacity:.14;transform-origin:left;transition:transform .9s cubic-bezier(.22,1,.36,1);pointer-events:none}
+.fine-divider.divider-pending::after{transform:scaleX(0)}
+
+.scroll-cue{position:absolute;left:calc(50% - 22px);bottom:16px;width:44px;height:44px;display:grid;place-items:center;color:inherit;opacity:.65;transition:opacity .25s ease}
+.scroll-cue span{position:relative;width:1px;height:24px;background:currentColor;animation:scroll-cue-drift 2.4s ease-in-out infinite}
+.scroll-cue span::after{content:"";position:absolute;bottom:0;left:-2px;width:5px;height:5px;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(45deg)}
+.scroll-cue.is-gone{opacity:0;pointer-events:none;visibility:hidden}
+@keyframes scroll-cue-drift{0%,100%{transform:translateY(-2px);opacity:.45}50%{transform:translateY(3px);opacity:.85}}
+
+@media(hover:hover) and (pointer:fine){
+  .btn{transition:opacity .2s ease,transform .2s ease}
+  .btn:hover{transform:translateY(-1px)}
+  main a:not(.scroll-cue),.site-foot a,.site-head nav a{transition:opacity .2s ease}
+  main a:not(.scroll-cue):hover,.site-foot a:hover,.site-head nav a:hover{opacity:.72}
+}
+@media(prefers-reduced-motion:reduce){
+  .scroll-reveal,.scroll-reveal.is-pending{opacity:1;transform:none;transition:none}
+  .fine-divider::after,.fine-divider.divider-pending::after{transform:none;transition:none}
+  .scroll-cue,.scroll-cue span,.btn,main a,.site-foot a,.site-head nav a{animation:none!important;transition:none!important;transform:none}
+  .closing-script.is-waiting{visibility:visible}
+}

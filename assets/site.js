@@ -50,6 +50,16 @@ document.querySelectorAll('form.sq').forEach(function(f){
 });
 
 
+// Share one animation download between the opening and closing marks.
+var nightsAnimationRequest=null;
+function loadNightsAnimation(url){
+  if(!nightsAnimationRequest) nightsAnimationRequest=fetch(url).then(function(r){
+    if(!r.ok) throw new Error('Animation unavailable');
+    return r.blob();
+  }).catch(function(error){nightsAnimationRequest=null;throw error;});
+  return nightsAnimationRequest;
+}
+
 // Original transparent handwriting frames, encoded once as WebP (no traced paths).
 // One image means one NIGHTS layer, including reduced motion and failed loads.
 (function(){
@@ -69,10 +79,8 @@ document.querySelectorAll('form.sq').forEach(function(f){
     if(motion.matches) return;
     var run=++generation;
     // Cache bytes, but use a fresh URL to restart the single-play image reliably.
-    if(!pending) pending=fetch(art.dataset.animation).then(function(r){
-      if(!r.ok) throw new Error('Animation unavailable');
-      return r.blob();
-    }).then(function(value){blob=value;return value;}).catch(function(){pending=null;return null;});
+    if(!pending) pending=loadNightsAnimation(art.dataset.animation)
+      .then(function(value){blob=value;return value;}).catch(function(){pending=null;return null;});
     pending.then(function(value){
       if(!value || run!==generation || motion.matches) return;
       release();
@@ -116,4 +124,73 @@ document.querySelectorAll('form.sq').forEach(function(f){
     script.async=true;
     document.head.appendChild(script);
   }
+})();
+
+// Repeat the same handwriting when the closing mark enters view.
+(function(){
+  var art=document.querySelector('.closing-script');
+  if(!art || !('IntersectionObserver' in window)) return;
+  var still=art.getAttribute('src'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var objectURL=null, generation=0, inView=false;
+  function release(){if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}}
+  function showStill(){generation++;art.src=still;art.classList.remove('is-waiting');release();}
+  function play(){
+    if(motion.matches) return;
+    var run=++generation;
+    loadNightsAnimation(art.dataset.animation).then(function(blob){
+      if(run!==generation || motion.matches) return;
+      release();objectURL=URL.createObjectURL(blob);art.src=objectURL;
+      art.classList.remove('is-waiting');
+    }).catch(function(){if(run===generation) showStill();});
+  }
+  art.addEventListener('error',function(){if(art.getAttribute('src')!==still) showStill();});
+  if(!motion.matches) art.classList.add('is-waiting');
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting && !inView) play();
+      inView=entry.isIntersecting;
+    });
+  },{threshold:.25});
+  observer.observe(art);
+  motion.addEventListener('change',function(){if(motion.matches) showStill();else if(inView) play();});
+})();
+
+// Progressive enhancement: content remains visible with no JS or reduced motion.
+(function(){
+  var motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  if(motion.matches || !('IntersectionObserver' in window)) return;
+  var targets=document.querySelectorAll('.intro h2,.intro p,.join .c-wide>p,.post h1,.post h2,.post h3,.post h4,.post p,.story h1,.story p,.legal h4,.legal p');
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(!entry.isIntersecting) return;
+      entry.target.classList.remove('is-pending','divider-pending');
+      observer.unobserve(entry.target);
+    });
+  },{threshold:.1,rootMargin:'0px 0px -20px 0px'});
+  targets.forEach(function(el){
+    // Leave content already in view alone; reveal only incoming text.
+    if(el.getBoundingClientRect().top<window.innerHeight) return;
+    el.classList.add('scroll-reveal','is-pending');observer.observe(el);
+  });
+  document.querySelectorAll('.fine-divider').forEach(function(el){
+    if(el.getBoundingClientRect().top<window.innerHeight) return;
+    el.classList.add('divider-pending');observer.observe(el);
+  });
+  motion.addEventListener('change',function(){
+    if(!motion.matches) return;
+    observer.disconnect();
+    document.querySelectorAll('.is-pending,.divider-pending').forEach(function(el){el.classList.remove('is-pending','divider-pending');});
+  });
+})();
+
+// The opening cue retires as soon as the visitor starts scrolling.
+(function(){
+  var cue=document.querySelector('.scroll-cue');
+  if(!cue) return;
+  function retire(){
+    if(window.scrollY<=8) return;
+    cue.classList.add('is-gone');cue.setAttribute('aria-hidden','true');cue.tabIndex=-1;
+    window.removeEventListener('scroll',retire);
+  }
+  window.addEventListener('scroll',retire,{passive:true});retire();
 })();

@@ -163,8 +163,9 @@ def home():
     <img class="united-word" src="/assets/united-wordmark-white.png" alt="" aria-hidden="true" width="1000" height="200" fetchpriority="high">
     <img class="nights-script" src="/assets/nights-final.png" data-animation="/assets/nights-original.webp" alt="" aria-hidden="true" width="1216" height="499" fetchpriority="high">
   </div>
+  <a class="scroll-cue" href="#introduction" aria-label="Scroll to introduction"><span aria-hidden="true"></span></a>
 </section>
-<section class="intro"><div class="frame"><div class="col c-main">
+<section class="intro fine-divider" id="introduction"><div class="frame"><div class="col c-main">
   <h2><strong>A new chapter. A new BEGINNING. A new SOUND. </strong></h2>
   <p>For many of us, <strong>the UNITED story began with young people gathering</strong> - powerful prayer meetings, loud and passionate praise, intimate moments of worship - hands raised and hearts abandoned.</p>
   <p>A generation hungry and desperate for <strong>the tangible presence of God</strong>, lifting up the name of Jesus with one heart, one voice and one sound.</p>
@@ -176,11 +177,14 @@ def home():
   <p><strong>JOIN US ON THE JOURNEY.</strong></p>
   <p><strong>COME WITH US ON A NEW ADVENTURE.</strong></p>
 </div></div></section>
-<section class="bleed join dark">
+<section class="bleed join dark fine-divider">
   <div class="media" aria-hidden="true"><img src="{CDN}/7e289948-8475-493e-90b6-b7a68c406ac9/united-form-bg.jpg?format=2500w" alt="" loading="lazy"></div><div class="shade"></div>
   <div class="frame" style="width:100%">
     <div class="col c-wide" style="margin-bottom:31px"><p class="large"><strong>THE JOURNEY IS JUST BEGINNING</strong></p><p>Receive occasional updates about new music, gatherings and what comes next.</p></div>
     <div class="col c-form">{form("signup", "JOIN THE JOURNEY", "<p>Thank you. You're now on the journey with us.</p>", dark=True)}</div>
+  </div>
+  <div class="closing-mark" role="img" aria-label="Nights">
+    <img class="closing-script" src="/assets/nights-final.png" data-animation="/assets/nights-original.webp" alt="" aria-hidden="true" width="1216" height="499" loading="lazy">
   </div>
 </section>"""
     page("/", "UNITED Nights | Worship Gatherings & New Music", body,
