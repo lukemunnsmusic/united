@@ -29,7 +29,7 @@ OG_DEFAULT = "https://static1.squarespace.com/static/6a6464a7513b006c5a13f402/t/
 IG = "https://instagram.com/unitednights.co"
 # Aktiv Grotesk (Adobe Fonts). Set ADOBE_KIT to the kit id from Luke's own Adobe Fonts web project;
 # until then the browser falls back to Helvetica Neue / Arial.
-ADOBE_KIT = ""
+ADOBE_KIT = "jcd6pcn"  # Adobe Fonts web project "UNITED Nights website" on Luke's Adobe account
 
 NAV = [("HOME", "/"), ("STORIES", "/stories"), ("CONTACT", "/contact")]
 IG_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zM12 0C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.2 4.4 2.6 6.8 7 7 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c4.4-.2 6.8-2.6 7-7 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.2-4.4-2.6-6.8-7-7C15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9z"/></svg>'
