@@ -244,3 +244,10 @@ form.sq .two{column-gap:10px}
   .scroll-cue,.scroll-cue span,.btn,main a,.site-foot a,.site-head nav a{animation:none!important;transition:none!important;transform:none}
   .closing-script.is-waiting{visibility:visible}
 }
+
+/* Move only the existing monstera image; keep signup content in normal flow. */
+@media screen and (prefers-reduced-motion:no-preference){
+  .join.has-parallax{--parallax-space:48px}
+  .join.has-parallax .media{inset:calc(-1 * var(--parallax-space)) 0;transform:translate3d(0,var(--parallax-y,0px),0)}
+}
+@media print{.scroll-reveal.is-pending{opacity:1;transform:none}}

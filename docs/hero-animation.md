@@ -1,6 +1,6 @@
 # UNITED Nights hero animation preview
 
-PR #4 replaces the traced SVG preview with the original transparent handwriting frames. Preview only. Jason must review the final PR head before any merge. Production, Squarespace, DNS, Hub, forms and credentials are outside this change.
+PR #4 replaces the traced SVG preview with the original transparent handwriting frames. Production, Squarespace, DNS, Hub, forms and credentials are outside this change.
 
 ## Artwork and geometry
 

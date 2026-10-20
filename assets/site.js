@@ -194,3 +194,31 @@ function loadNightsAnimation(url){
   }
   window.addEventListener('scroll',retire,{passive:true});retire();
 })();
+
+// Lightweight background-only parallax, with static no-JS/reduced-motion fallbacks.
+(function(){
+  var section=document.querySelector('.join'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  if(!section) return;
+  var media=section.querySelector('.media'), frame=0;
+  if(!media) return;
+  function update(){
+    frame=0;
+    if(motion.matches) return;
+    var rect=section.getBoundingClientRect(), height=window.innerHeight;
+    if(rect.bottom<0 || rect.top>height) return;
+    var space=parseFloat(getComputedStyle(section).getPropertyValue('--parallax-space'))||0;
+    var offset=Math.max(-space,Math.min(space,(height/2-rect.top-rect.height/2)*.12));
+    media.style.setProperty('--parallax-y',offset.toFixed(2)+'px');
+  }
+  function schedule(){if(!motion.matches && !frame) frame=requestAnimationFrame(update);}
+  function configure(){
+    section.classList.toggle('has-parallax',!motion.matches);
+    if(motion.matches){cancelAnimationFrame(frame);frame=0;media.style.removeProperty('--parallax-y');}
+    else schedule();
+  }
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule,{passive:true});
+  window.addEventListener('pageshow',schedule);
+  motion.addEventListener('change',configure);
+  configure();
+})();
