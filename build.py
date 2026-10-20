@@ -237,7 +237,7 @@ def contact():
   <div class="frame" style="width:100%"><div class="col c-banner"><h1>CONTACT</h1><h3>Bookings, partnerships, <br>collaborations + enquiries</h3></div></div>
 </section>
 <section class="block"><div class="frame">
-  <div class="col c-contact-head" style="margin-bottom:23px"><h3>THE NEXT CHAPTER STARTS<br>WITH A CONVERSATION.</h3></div>
+  <div class="col c-contact-head" style="margin-bottom:clamp(12px, calc(7.914px + 1.0476vw), 23px)"><h3>THE NEXT CHAPTER STARTS<br>WITH A CONVERSATION.</h3></div>
   <div class="col c-contact-form">{form("contact", "Submit", "Thank you. We've received your message and will be in touch.", message=True)}</div>
 </div></section>"""
     page("/contact", "CONTACT — UNITED Nights", body, "")
