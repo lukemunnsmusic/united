@@ -217,7 +217,6 @@ form.sq .two{column-gap:10px}
 
 /* Existing footer lockup: same proportions as the approved opening mark. */
 .footer-mark{position:relative;aspect-ratio:1200 / 595}
-.closing-script.is-waiting{visibility:hidden}
 
 /* Text keeps its natural position; only compositor properties animate. */
 .scroll-reveal{transition:opacity .65s ease,transform .65s cubic-bezier(.22,1,.36,1)}
@@ -242,7 +241,6 @@ form.sq .two{column-gap:10px}
   .scroll-reveal,.scroll-reveal.is-pending{opacity:1;transform:none;transition:none}
   .fine-divider::after,.fine-divider.divider-pending::after{transform:none;transition:none}
   .scroll-cue,.scroll-cue span,.btn,main a,.site-foot a,.site-head nav a{animation:none!important;transition:none!important;transform:none}
-  .closing-script.is-waiting{visibility:visible}
 }
 
 /* Move only the existing monstera image; keep signup content in normal flow. */
@@ -250,3 +248,11 @@ form.sq .two{column-gap:10px}
   .join.has-parallax .media img{position:absolute;left:50%;top:50%;max-width:none;width:var(--parallax-width,100%);height:var(--parallax-height,100%);transform:translate(-50%,-50%) translateY(var(--parallax-y,0px)) scale(1.1764705882)}
 }
 @media print{.scroll-reveal.is-pending{opacity:1;transform:none}}
+
+/* Head bootstrap hides the finished PNG before first paint, only with motion. */
+@media screen and (prefers-reduced-motion:no-preference){
+  .nights-motion .nights-script:not(.is-ready),.nights-motion .closing-script:not(.is-ready){opacity:0}
+  .nights-motion:not(.nights-js) .nights-script:not(.is-ready),.nights-motion:not(.nights-js) .closing-script:not(.is-ready){animation:nights-still-in .3s 6s both}
+  .nights-script.is-fallback,.closing-script.is-fallback{animation:nights-still-in .3s ease both}
+}
+@keyframes nights-still-in{from{opacity:0}to{opacity:1}}

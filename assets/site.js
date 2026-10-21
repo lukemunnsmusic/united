@@ -2,6 +2,8 @@
 // fixed transparent header that hides on scroll down and returns solid on scroll up,
 // full-screen mobile menu, and forms.
 
+document.documentElement.classList.add('nights-js');
+
 // Header "scroll back"
 (function(){
   var h=document.querySelector('.site-head'); if(!h) return;
@@ -60,48 +62,64 @@ function loadNightsAnimation(url){
   return nightsAnimationRequest;
 }
 
-// Original transparent handwriting frames, encoded once as WebP (no traced paths).
-// One image means one NIGHTS layer, including reduced motion and failed loads.
+// Reveal on the displayed image's load event: no preloaded animation consuming frames.
+function createNightsPlayback(art,motion){
+  var still=art.getAttribute('src'), objectURL=null, generation=0, timeout=null;
+  function clearWait(){clearTimeout(timeout);timeout=null;}
+  function release(){if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}}
+  function showStill(fade){
+    var run=++generation;
+    clearWait();art.onload=null;
+    art.classList.remove('is-loading','is-fallback');
+    function reveal(){
+      if(run!==generation) return;
+      if(fade && !motion.matches) art.classList.add('is-fallback');
+      art.classList.add('is-ready');
+      art.onload=null;
+    }
+    art.onload=reveal;art.src=still;release();
+    if(motion.matches || (art.complete && art.naturalWidth)) reveal();
+  }
+  function play(){
+    if(motion.matches){showStill(false);return;}
+    var run=++generation;
+    clearWait();art.onload=null;art.classList.remove('is-ready','is-fallback');
+    art.classList.add('is-loading');
+    timeout=setTimeout(function(){if(run===generation) showStill(true);},4000);
+    loadNightsAnimation(art.dataset.animation).then(function(blob){
+      if(run!==generation || motion.matches) return;
+      release();objectURL=URL.createObjectURL(blob);
+      art.onload=function(){
+        if(run!==generation || motion.matches) return;
+        clearWait();art.classList.remove('is-loading');
+        art.classList.add('is-ready');art.onload=null;
+      };
+      art.src=objectURL;
+    }).catch(function(){if(run===generation) showStill(true);});
+  }
+  art.addEventListener('error',function(){if(art.getAttribute('src')!==still) showStill(true);});
+  return {play:play,showStill:showStill};
+}
+
+// Original handwriting, with the existing arrival and scroll-back replay thresholds.
 (function(){
   var art=document.querySelector('.hero .nights-script');
   if(!art) return;
-  var still=art.getAttribute('src'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
-  var blob=null, pending=null, objectURL=null, away=false, lastY=window.scrollY, generation=0;
-  function release(){
-    if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}
-  }
-  function showStill(){
-    generation++;
-    art.src=still;
-    release();
-  }
-  function replay(){
-    if(motion.matches) return;
-    var run=++generation;
-    // Cache bytes, but use a fresh URL to restart the single-play image reliably.
-    if(!pending) pending=loadNightsAnimation(art.dataset.animation)
-      .then(function(value){blob=value;return value;}).catch(function(){pending=null;return null;});
-    pending.then(function(value){
-      if(!value || run!==generation || motion.matches) return;
-      release();
-      objectURL=URL.createObjectURL(blob);
-      art.src=objectURL;
-    });
-  }
-  art.addEventListener('error',function(){if(art.getAttribute('src')!==still) showStill();});
+  var motion=window.matchMedia('(prefers-reduced-motion: reduce)'), playback=createNightsPlayback(art,motion);
+  var away=false, lastY=window.scrollY;
   function onScroll(){
     var y=window.scrollY, rect=art.parentElement.getBoundingClientRect();
     if(rect.bottom<=0) away=true;
     if(away && y<lastY && rect.bottom>rect.height*.35 && rect.top<window.innerHeight){
-      away=false;
-      replay();
+      away=false;playback.play();
     }
     lastY=y;
   }
   window.addEventListener('scroll',onScroll,{passive:true});
-  motion.addEventListener('change',function(){if(motion.matches) showStill();else replay();});
-  window.addEventListener('pageshow',function(e){if(e.persisted) replay();});
-  if(art.parentElement.getBoundingClientRect().bottom>0) replay();else away=true;
+  motion.addEventListener('change',function(){if(motion.matches) playback.showStill(false);else playback.play();});
+  window.addEventListener('pageshow',function(e){if(e.persisted) playback.play();});
+  if(motion.matches) playback.showStill(false);
+  else if(art.parentElement.getBoundingClientRect().bottom>0) playback.play();else away=true;
 })();
 
 // Reveal the decorative background only after YouTube confirms playback.
@@ -109,9 +127,14 @@ function loadNightsAnimation(url){
 (function(){
   var frame=document.getElementById('hero-background');
   if(!frame) return;
+  function disableCaptions(player){
+    try{player.unloadModule('captions');}catch(error){}
+    try{player.setOption('captions','track',{});}catch(error){}
+  }
   function createPlayer(){
     new YT.Player(frame,{events:{
-      onReady:function(e){e.target.mute();e.target.playVideo();},
+      onReady:function(e){disableCaptions(e.target);e.target.mute();e.target.playVideo();},
+      onApiChange:function(e){if(e.target.getOptions().indexOf('captions')!==-1) disableCaptions(e.target);},
       onStateChange:function(e){frame.classList.toggle('is-playing',e.data===1);},
       onError:function(){frame.classList.remove('is-playing');}
     }});
@@ -126,33 +149,21 @@ function loadNightsAnimation(url){
   }
 })();
 
-// Draw the NIGHTS part of the existing footer lockup when it enters view.
+// Draw the existing footer lockup on the same viewport-entry threshold as before.
 (function(){
   var art=document.querySelector('.closing-script');
-  if(!art || !('IntersectionObserver' in window)) return;
-  var still=art.getAttribute('src'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
-  var objectURL=null, generation=0, inView=false;
-  function release(){if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}}
-  function showStill(){generation++;art.src=still;art.classList.remove('is-waiting');release();}
-  function play(){
-    if(motion.matches) return;
-    var run=++generation;
-    loadNightsAnimation(art.dataset.animation).then(function(blob){
-      if(run!==generation || motion.matches) return;
-      release();objectURL=URL.createObjectURL(blob);art.src=objectURL;
-      art.classList.remove('is-waiting');
-    }).catch(function(){if(run===generation) showStill();});
-  }
-  art.addEventListener('error',function(){if(art.getAttribute('src')!==still) showStill();});
-  if(!motion.matches) art.classList.add('is-waiting');
+  if(!art) return;
+  var motion=window.matchMedia('(prefers-reduced-motion: reduce)'), playback=createNightsPlayback(art,motion), inView=false;
+  if(!('IntersectionObserver' in window)){playback.showStill(false);return;}
+  if(motion.matches) playback.showStill(false);
   var observer=new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
-      if(entry.isIntersecting && !inView) play();
+      if(entry.isIntersecting && !inView) playback.play();
       inView=entry.isIntersecting;
     });
   },{threshold:.25});
   observer.observe(art);
-  motion.addEventListener('change',function(){if(motion.matches) showStill();else if(inView) play();});
+  motion.addEventListener('change',function(){if(motion.matches) playback.showStill(false);else if(inView) playback.play();});
 })();
 
 // Progressive enhancement: content remains visible with no JS or reduced motion.
@@ -199,11 +210,19 @@ function loadNightsAnimation(url){
 (function(){
   var section=document.querySelector('.join'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
   if(!section) return;
-  var media=section.querySelector('.media'), image=media && media.querySelector('img'), frame=0, progress=null;
+  var media=section.querySelector('.media'), image=media && media.querySelector('img'), frame=0, progress=null, imageHeight=0;
   if(!image) return;
+  function measure(){
+    if(!image.naturalWidth) return;
+    var rect=section.getBoundingClientRect();
+    imageHeight=Math.max(rect.height,rect.width*image.naturalHeight/image.naturalWidth);
+    media.style.setProperty('--parallax-height',imageHeight+'px');
+    media.style.setProperty('--parallax-width',(imageHeight*image.naturalWidth/image.naturalHeight)+'px');
+    schedule();
+  }
   function update(){
     frame=0;
-    if(motion.matches) return;
+    if(motion.matches || !imageHeight) return;
     var rect=section.getBoundingClientRect(), height=window.innerHeight;
     if(rect.bottom<0 || rect.top>height || !image.naturalWidth) return;
     // Match Squarespace's 30% intensity / 90-degree background effect.
@@ -213,13 +232,10 @@ function loadNightsAnimation(url){
     var range=before+rect.height+end-height;
     var target=Math.max(0,Math.min(1,range>0?(before-rect.top)/range:.5));
     var delta=progress===null?0:target-progress;
-    progress=progress===null || delta<.01?target:progress+delta*.1;
-    var imageHeight=Math.max(rect.height,rect.width*image.naturalHeight/image.naturalWidth);
+    progress=progress===null || Math.abs(delta)<.01?target:progress+delta*.1;
     var offset=(.5-progress)*imageHeight*.15/.85;
-    media.style.setProperty('--parallax-height',imageHeight+'px');
-    media.style.setProperty('--parallax-width',(imageHeight*image.naturalWidth/image.naturalHeight)+'px');
     media.style.setProperty('--parallax-y',offset.toFixed(2)+'px');
-    if(target-progress>=.01) frame=requestAnimationFrame(update);
+    if(Math.abs(target-progress)>=.01) frame=requestAnimationFrame(update);
   }
   function schedule(){if(!motion.matches && !frame) frame=requestAnimationFrame(update);}
   function configure(){
@@ -228,9 +244,10 @@ function loadNightsAnimation(url){
     else schedule();
   }
   window.addEventListener('scroll',schedule,{passive:true});
-  window.addEventListener('resize',schedule,{passive:true});
-  window.addEventListener('pageshow',schedule);
-  image.addEventListener('load',schedule);
+  window.addEventListener('resize',measure,{passive:true});
+  window.addEventListener('pageshow',measure);
+  image.addEventListener('load',measure);
+  if('ResizeObserver' in window) new ResizeObserver(measure).observe(section);
   motion.addEventListener('change',configure);
-  configure();
+  measure();configure();
 })();
