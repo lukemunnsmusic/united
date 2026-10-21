@@ -2,6 +2,8 @@
 // fixed transparent header that hides on scroll down and returns solid on scroll up,
 // full-screen mobile menu, and forms.
 
+document.documentElement.classList.add('nights-js');
+
 // Header "scroll back"
 (function(){
   var h=document.querySelector('.site-head'); if(!h) return;

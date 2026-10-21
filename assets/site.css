@@ -251,8 +251,8 @@ form.sq .two{column-gap:10px}
 
 /* Head bootstrap hides the finished PNG before first paint, only with motion. */
 @media screen and (prefers-reduced-motion:no-preference){
-  .nights-motion .nights-script:not(.is-ready),.nights-motion .closing-script:not(.is-ready){opacity:0;animation:nights-still-in .3s 6s both}
-  .nights-motion .nights-script.is-loading,.nights-motion .closing-script.is-loading{opacity:0;animation:none}
+  .nights-motion .nights-script:not(.is-ready),.nights-motion .closing-script:not(.is-ready){opacity:0}
+  .nights-motion:not(.nights-js) .nights-script:not(.is-ready),.nights-motion:not(.nights-js) .closing-script:not(.is-ready){animation:nights-still-in .3s 6s both}
   .nights-script.is-fallback,.closing-script.is-fallback{animation:nights-still-in .3s ease both}
 }
 @keyframes nights-still-in{from{opacity:0}to{opacity:1}}
