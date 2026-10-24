@@ -1,0 +1,10 @@
+name: Temp import Squarespace assets
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo Temporary migration worker
