@@ -50,10 +50,13 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme=""):
     mnav = "".join(f'<a href="{href}">{label}</a>' for label, href in NAV)
     url = SITE + (path if path != "/" else "")
     font = f'\n<link rel="stylesheet" href="https://use.typekit.net/{ADOBE_KIT}.css">' if ADOBE_KIT else ""
+    hero_head = "<link rel=\"preconnect\" href=\"https://www.youtube.com\">\n<link rel=\"preconnect\" href=\"https://www.google.com\">\n<link rel=\"preconnect\" href=\"https://i.ytimg.com\">\n<link rel=\"preconnect\" href=\"https://s.ytimg.com\">\n<script src=\"https://www.youtube.com/iframe_api\" async></script>\n" if path == "/" else ""
+    hero_bootstrap = "<script>(function(){\n  var root=document.documentElement;\n  root.classList.add('nights-motion','hero-wait');\n  var started=false;\n  window.startUnitedHero=function(){\n    if(started) return;\n    started=true;\n    root.classList.remove('hero-wait');\n    root.classList.add('hero-started');\n    window.dispatchEvent(new Event('united-hero-start'));\n  };\n  window.setTimeout(window.startUnitedHero,2500);\n})();</script>" if path == "/" else "<script>document.documentElement.classList.add('nights-motion');</script>"
+    early_iframe = "<iframe id=\"hero-background\" src=\"https://www.youtube.com/embed/hqK0pqV-c9c?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=hqK0pqV-c9c&controls=0&playsinline=1&rel=0&disablekb=1&iv_load_policy=3&cc_load_policy=0&fs=0\" title=\"\" aria-hidden=\"true\" tabindex=\"-1\" loading=\"eager\" fetchpriority=\"high\" allow=\"autoplay; encrypted-media\"></iframe>" if path == "/" else ""
     doc = f"""<!doctype html>
 <html lang="en-AU">
 <head>
-<meta charset="utf-8">
+{hero_head}<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
@@ -66,10 +69,11 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme=""):
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">{font}
 <link rel="icon" href="https://images.squarespace-cdn.com/content/v1/6a6464a7513b006c5a13f402/e97d65ae-8eb5-45a3-b177-e178b9c9b715/favicon.ico">
-<script>document.documentElement.classList.add('nights-motion');</script>
+{hero_bootstrap}
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body class="{theme}">
+<body class="{theme}{' home' if path == '/' else ''}">
+{early_iframe}
 <header class="site-head">
   <div class="row">
     <a class="logo" href="/" aria-label="UNITED Nights home"><img src="{HEAD_LOGO}" alt="UNITED Nights" width="210" height="42"></a>
@@ -161,7 +165,7 @@ def form(kind, button, thanks, message=False, dark=False):
 
 def home():
     body = f"""<section class="bleed hero dark">
-  <div class="media" aria-hidden="true"><iframe id="hero-background" src="https://www.youtube.com/embed/hqK0pqV-c9c?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=hqK0pqV-c9c&controls=0&playsinline=1&rel=0&disablekb=1&iv_load_policy=3&cc_load_policy=0" title="" tabindex="-1" allow="autoplay; encrypted-media"></iframe></div>
+  
   <div class="hero-mark" role="img" aria-label="UNITED Nights">
     <img class="united-word" src="/assets/united-wordmark-white.png" alt="" aria-hidden="true" width="1000" height="200" fetchpriority="high">
     <img class="nights-script" src="/assets/nights-final.png" data-animation="/assets/nights-original.webp" alt="" aria-hidden="true" width="1216" height="499" fetchpriority="high">
@@ -180,7 +184,7 @@ def home():
   <p><strong>JOIN US ON THE JOURNEY.</strong></p>
   <p><strong>COME WITH US ON A NEW ADVENTURE.</strong></p>
 </div></div></section>
-<section class="bleed join dark fine-divider">
+<section class="bleed join dark">
   <div class="media" aria-hidden="true"><img src="{CDN}/7e289948-8475-493e-90b6-b7a68c406ac9/united-form-bg.jpg?format=2500w" alt="" loading="lazy"></div><div class="shade"></div>
   <div class="frame" style="width:100%">
     <div class="col c-wide" style="margin-bottom:31px"><p class="large"><strong>THE JOURNEY IS JUST BEGINNING</strong></p><p>Receive occasional updates about new music, gatherings and what comes next.</p></div>

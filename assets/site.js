@@ -106,9 +106,10 @@ function createNightsPlayback(art,motion){
   var art=document.querySelector('.hero .nights-script');
   if(!art) return;
   var motion=window.matchMedia('(prefers-reduced-motion: reduce)'), playback=createNightsPlayback(art,motion);
-  var away=false, lastY=window.scrollY;
+  var away=false, lastY=window.scrollY, initialStarted=false;
   function onScroll(){
     var y=window.scrollY, rect=art.parentElement.getBoundingClientRect();
+    if(!initialStarted){lastY=y;return;}
     if(rect.bottom<=0) away=true;
     if(away && y<lastY && rect.bottom>rect.height*.35 && rect.top<window.innerHeight){
       away=false;playback.play();
@@ -116,14 +117,20 @@ function createNightsPlayback(art,motion){
     lastY=y;
   }
   window.addEventListener('scroll',onScroll,{passive:true});
-  motion.addEventListener('change',function(){if(motion.matches) playback.showStill(false);else playback.play();});
-  window.addEventListener('pageshow',function(e){if(e.persisted) playback.play();});
-  if(motion.matches) playback.showStill(false);
-  else if(art.parentElement.getBoundingClientRect().bottom>0) playback.play();else away=true;
+  motion.addEventListener('change',function(){if(!initialStarted) return;if(motion.matches) playback.showStill(false);else playback.play();});
+  window.addEventListener('pageshow',function(e){if(e.persisted && initialStarted) playback.play();});
+  function begin(){
+    if(initialStarted) return;
+    initialStarted=true;
+    if(motion.matches) playback.showStill(false);
+    else if(art.parentElement.getBoundingClientRect().bottom>0) playback.play();else away=true;
+  }
+  window.addEventListener('united-hero-start',begin);
+  if(document.documentElement.classList.contains('hero-started')) begin();
 })();
 
-// Reveal the decorative background only after YouTube confirms playback.
-// Unavailable/blocked video leaves the original black hero behind the logo.
+// Fade YouTube over its preloaded thumbnail only after actual playback.
+// If autoplay is blocked, the thumbnail remains and the mark begins after 2.5 seconds.
 (function(){
   var frame=document.getElementById('hero-background');
   if(!frame) return;
@@ -135,18 +142,17 @@ function createNightsPlayback(art,motion){
     new YT.Player(frame,{events:{
       onReady:function(e){disableCaptions(e.target);e.target.mute();e.target.playVideo();},
       onApiChange:function(e){if(e.target.getOptions().indexOf('captions')!==-1) disableCaptions(e.target);},
-      onStateChange:function(e){frame.classList.toggle('is-playing',e.data===1);},
+      onStateChange:function(e){
+        if(e.data===1){
+          frame.classList.add('is-playing');
+          if(window.startUnitedHero) window.startUnitedHero();
+        }
+      },
       onError:function(){frame.classList.remove('is-playing');}
     }});
   }
   if(window.YT && window.YT.Player) createPlayer();
-  else{
-    window.onYouTubeIframeAPIReady=createPlayer;
-    var script=document.createElement('script');
-    script.src='https://www.youtube.com/iframe_api';
-    script.async=true;
-    document.head.appendChild(script);
-  }
+  else window.onYouTubeIframeAPIReady=createPlayer;
 })();
 
 // Draw the existing footer lockup on the same viewport-entry threshold as before.
