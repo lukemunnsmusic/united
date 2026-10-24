@@ -211,11 +211,14 @@ form.sq .two{column-gap:10px}
   .hero .hero-mark{width:88%}
 }
 
-/* The first YouTube frame covers the hero while its player starts. */
+/* Early iframe sits beneath the unchanged hero composition. */
+body.home{background:#000;overflow-x:clip}
+.home .hero{background:transparent;z-index:1}
+.home .intro{position:relative;z-index:1;background:var(--white)}
+.home .join{z-index:1}
 .hero-wait .hero .hero-mark{opacity:0}
-.hero .hero-poster{position:absolute;inset:0;filter:contrast(.8)}
-.hero #hero-background{opacity:0;transition:opacity .4s;filter:contrast(.8);pointer-events:none}
-.hero #hero-background.is-playing{opacity:1}
+body.home > #hero-background{position:absolute;top:calc((100svh - max(100svh,56.25vw)) / 2);left:50%;width:max(100vw,177.78svh);height:max(100svh,56.25vw);transform:translateX(-50%);border:0;z-index:0;opacity:0;transition:opacity .4s;filter:contrast(.8);pointer-events:none}
+body.home > #hero-background.is-playing{opacity:1}
 
 /* Existing footer lockup: same proportions as the approved opening mark. */
 .footer-mark{position:relative;aspect-ratio:1200 / 595}
