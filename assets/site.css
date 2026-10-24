@@ -102,7 +102,7 @@ strong{font-weight:700}
 .banner-contact .shade{opacity:.2}
 .banner-contact h1{margin-bottom:32px}
 .banner-contact h3{margin-bottom:clamp(3px, calc(-1.457px + 1.1429vw), 15px)}
-.banner-privacy h1{margin-bottom:clamp(22px, calc(31.600px + -0.6667vw), 29px)}
+.banner-privacy h1{margin-bottom:clamp(22px, calc(31.600px + -0.6667vw), 29px);color:var(--white)}
 .banner-legal{min-height:100vh;min-height:100svh;justify-content:center;text-align:center;padding-top:clamp(83px, calc(76.686px + 1.619vw), 100px)}
 .banner-legal .shade{opacity:0}
 .banner-privacy{min-height:clamp(557.000px, calc(511.686px + 11.6190vw), 679.000px);padding-bottom:clamp(95.000px, calc(170.429px + -5.2381vw), 150.000px)}
@@ -250,7 +250,7 @@ body.home > #hero-background.is-playing{opacity:1}
 
 /* Move only the existing monstera image; keep signup content in normal flow. */
 @media screen and (prefers-reduced-motion:no-preference){
-  .join.has-parallax .media img{position:absolute;left:50%;top:50%;max-width:none;width:var(--parallax-width,100%);height:var(--parallax-height,100%);transform:translate(-50%,-50%) translateY(var(--parallax-y,0px)) scale(1.1764705882)}
+  .join.has-parallax .media img,.banner.has-parallax .media img{position:absolute;left:50%;top:50%;max-width:none;width:var(--parallax-width,100%);height:var(--parallax-height,100%);transform:translate(-50%,-50%) translateY(var(--parallax-y,0px)) scale(1.1764705882)}
 }
 @media print{.scroll-reveal.is-pending{opacity:1;transform:none}}
 
