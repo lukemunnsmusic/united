@@ -211,8 +211,10 @@ form.sq .two{column-gap:10px}
   .hero .hero-mark{width:88%}
 }
 
-/* Keep background player chrome/errors out of the logo composition. */
-.hero #hero-background{opacity:0;transition:opacity .4s;filter:contrast(.8)}
+/* The first YouTube frame covers the hero while its player starts. */
+.hero-wait .hero .hero-mark{opacity:0}
+.hero .hero-poster{position:absolute;inset:0;filter:contrast(.8)}
+.hero #hero-background{opacity:0;transition:opacity .4s;filter:contrast(.8);pointer-events:none}
 .hero #hero-background.is-playing{opacity:1}
 
 /* Existing footer lockup: same proportions as the approved opening mark. */
