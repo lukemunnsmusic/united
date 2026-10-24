@@ -20,10 +20,9 @@ import html, re, pathlib, datetime, json
 
 ROOT = pathlib.Path(__file__).parent
 SITE = "https://unitednights.com"
-CDN = "https://images.squarespace-cdn.com/content/v1/6a6464a7513b006c5a13f402"
-HEAD_LOGO = CDN + "/3a0d35ff-cf40-4f06-9450-b90b574a8301/UNITED-Nights-Logo.png?format=1500w"
-LM_LOGO = CDN + "/2416aef0-200d-46e7-bf0f-f6e0e8497199/LUKE-MUNNS-LOGO-footer.png?format=750w"
-OG_DEFAULT = "https://static1.squarespace.com/static/6a6464a7513b006c5a13f402/t/6a8668b331e02f46bf595841/1787193523022/united-nights-facebook.jpg?format=1500w"
+HEAD_LOGO = "https://unitednights.com/assets/united-nights-header-logo.webp"
+LM_LOGO = "https://unitednights.com/assets/luke-munns-footer.webp"
+OG_DEFAULT = "https://unitednights.com/assets/united-nights-social.jpg"
 IG = "https://instagram.com/unitednights.co"
 
 # Search metadata for the public pages. /history is authored separately.
@@ -155,7 +154,7 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme="", published=None, au
 {hero_head}<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 {seo_head(path, title, desc, og, url, published, author, headline)}{font}
-<link rel="icon" href="https://images.squarespace-cdn.com/content/v1/6a6464a7513b006c5a13f402/e97d65ae-8eb5-45a3-b177-e178b9c9b715/favicon.ico">
+<link rel="icon" href="https://unitednights.com/assets/favicon.webp">
 {hero_bootstrap}
 <link rel="stylesheet" href="/assets/site.css">
 </head>
@@ -220,7 +219,7 @@ def blocks(body, heading="h3"):
         elif m := re.fullmatch(r"\[video:([\w-]+)\]", b):
             out.append(f'<div class="video"><iframe src="https://www.youtube.com/embed/{m.group(1)}?feature=oembed" title="YouTube video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>')
         elif m := re.fullmatch(r"\[img:([^|\]]+)\|?([^\]]*)\]", b):
-            out.append(f'<figure><img src="{m.group(1)}?format=1500w" alt="{e(m.group(2))}" loading="lazy"></figure>')
+            out.append(f'<figure><img src="{m.group(1)}" alt="{e(m.group(2))}" loading="lazy"></figure>')
         else:
             out.append(f"<p>{inline(b)}</p>")
     flush()
@@ -273,7 +272,7 @@ def home():
   <p><strong>COME WITH US ON A NEW ADVENTURE.</strong></p>
 </div></div></section>
 <section class="bleed join dark">
-  <div class="media" aria-hidden="true"><img src="{CDN}/7e289948-8475-493e-90b6-b7a68c406ac9/united-form-bg.jpg?format=2500w" alt="" loading="lazy"></div><div class="shade"></div>
+  <div class="media" aria-hidden="true"><img src="https://unitednights.com/assets/join-background.webp" alt="" loading="lazy"></div><div class="shade"></div>
   <div class="frame" style="width:100%">
     <div class="col c-wide" style="margin-bottom:31px"><p class="large"><strong>THE JOURNEY IS JUST BEGINNING</strong></p><p>Receive occasional updates about new music, gatherings and what comes next.</p></div>
     <div class="col c-form">{form("signup", "JOIN THE JOURNEY", "<p>Thank you. You're now on the journey with us.</p>", dark=True)}</div>
@@ -295,7 +294,7 @@ def stories():
 
     items = "".join(f"""
   <article class="story">
-    <a class="img" href="/stories/{slug}"><img src="{m['image']}?format=1500w" alt="{e(m['title'])}" loading="lazy"></a>
+    <a class="img" href="/stories/{slug}"><img src="{m['image']}" alt="{e(m['title'])}" loading="lazy"></a>
     <div>
       <h1><a href="/stories/{slug}">{e(m['title'])}</a></h1>
       <p>{e(m['excerpt'])}</p>
@@ -303,7 +302,7 @@ def stories():
     </div>
   </article>""" for slug, m, _ in posts)
     page("/stories", "STORIES — UNITED Nights", f'<section class="stories"><div class="frame">{items}\n</div></section>', "",
-         og="https://static1.squarespace.com/static/6a6464a7513b006c5a13f402/t/6a8507b3762f55650d9e2518/1787103155141/UNITED-stories.jpg?format=1500w",
+         og="https://unitednights.com/assets/stories-social.webp",
          theme="light")
 
     for i, (slug, m, body) in enumerate(posts):
@@ -322,12 +321,12 @@ def stories():
   <h3>UNITED STORIES</h3>
   <p>Stories from where we've been, what we're building now, and what's ahead.</p>
 </div></article>
-<nav class="pager" aria-label="More stories"><div class="row">{nav}</div></nav>""", m["excerpt"], og=m["image"] + "?format=1500w", theme="light", published=m["date"], author=m["author"], headline=m["title"])
+<nav class="pager" aria-label="More stories"><div class="row">{nav}</div></nav>""", m["excerpt"], og=m["image"], theme="light", published=m["date"], author=m["author"], headline=m["title"])
 
 
 def contact():
     body = f"""<section class="bleed banner banner-contact dark">
-  <div class="media" aria-hidden="true"><img src="{CDN}/2f6517ce-938d-4263-bf4a-95d4ec717ff0/united-contact-banner.jpg?format=2500w" alt=""></div><div class="shade"></div>
+  <div class="media" aria-hidden="true"><img src="https://unitednights.com/assets/contact-banner.webp" alt=""></div><div class="shade"></div>
   <div class="frame" style="width:100%"><div class="col c-banner"><h1>CONTACT</h1><h3>Bookings, partnerships, <br>collaborations + enquiries</h3></div></div>
 </section>
 <section class="block"><div class="frame">
@@ -340,7 +339,7 @@ def contact():
 def legal():
     meta, body = read("legal-disclaimer.txt")
     page("/legal-disclaimer", "LEGAL / DISCLAIMER — UNITED Nights", f"""<section class="bleed banner banner-legal dark">
-  <div class="media" aria-hidden="true"><img src="{CDN}/86c8ff0c-b213-49d1-95cd-fdf4fd0a4370/united-nights-banner.jpg?format=2500w" alt=""></div><div class="shade"></div>
+  <div class="media" aria-hidden="true"><img src="https://unitednights.com/assets/legal-banner.webp" alt=""></div><div class="shade"></div>
   <div class="frame" style="width:100%"><h2 style="margin-inline:var(--pad)">LEGAL / DISCLAIMER</h2></div>
 </section>
 <section class="block-legal"><div class="frame"><div class="col c-legal legal">
@@ -351,7 +350,7 @@ def legal():
 def privacy():
     meta, body = read("privacy.txt")
     page("/privacy", "PRIVACY — UNITED Nights", f"""<section class="bleed banner banner-privacy">
-  <div class="media" aria-hidden="true"><img src="{CDN}/9502a1d7-8e92-4ca3-b0ff-c946e85981db/united-privacy-policy.jpg?format=2500w" alt=""></div>
+  <div class="media" aria-hidden="true"><img src="https://unitednights.com/assets/privacy-banner.webp" alt=""></div>
   <div class="frame" style="width:100%"><div class="col c-privacy-title"><h1>PRIVACY POLICY</h1></div></div>
 </section>
 <section class="block"><div class="frame"><div class="col c-centre legal">
