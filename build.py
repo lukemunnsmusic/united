@@ -50,8 +50,9 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme=""):
     mnav = "".join(f'<a href="{href}">{label}</a>' for label, href in NAV)
     url = SITE + (path if path != "/" else "")
     font = f'\n<link rel="stylesheet" href="https://use.typekit.net/{ADOBE_KIT}.css">' if ADOBE_KIT else ""
-    hero_head = "<link rel=\"preconnect\" href=\"https://www.youtube.com\">\n<link rel=\"preconnect\" href=\"https://www.google.com\">\n<link rel=\"preconnect\" href=\"https://i.ytimg.com\">\n<link rel=\"preconnect\" href=\"https://s.ytimg.com\">\n<link rel=\"preload\" as=\"image\" href=\"https://i.ytimg.com/vi/hqK0pqV-c9c/maxresdefault.jpg\" fetchpriority=\"high\">\n<script src=\"https://www.youtube.com/iframe_api\" async></script>\n" if path == "/" else ""
+    hero_head = "<link rel=\"preconnect\" href=\"https://www.youtube.com\">\n<link rel=\"preconnect\" href=\"https://www.google.com\">\n<link rel=\"preconnect\" href=\"https://i.ytimg.com\">\n<link rel=\"preconnect\" href=\"https://s.ytimg.com\">\n<script src=\"https://www.youtube.com/iframe_api\" async></script>\n" if path == "/" else ""
     hero_bootstrap = "<script>(function(){\n  var root=document.documentElement;\n  root.classList.add('nights-motion','hero-wait');\n  var started=false;\n  window.startUnitedHero=function(){\n    if(started) return;\n    started=true;\n    root.classList.remove('hero-wait');\n    root.classList.add('hero-started');\n    window.dispatchEvent(new Event('united-hero-start'));\n  };\n  window.setTimeout(window.startUnitedHero,2500);\n})();</script>" if path == "/" else "<script>document.documentElement.classList.add('nights-motion');</script>"
+    early_iframe = "<iframe id=\"hero-background\" src=\"https://www.youtube.com/embed/hqK0pqV-c9c?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=hqK0pqV-c9c&controls=0&playsinline=1&rel=0&disablekb=1&iv_load_policy=3&cc_load_policy=0&fs=0\" title=\"\" aria-hidden=\"true\" tabindex=\"-1\" loading=\"eager\" fetchpriority=\"high\" allow=\"autoplay; encrypted-media\"></iframe>" if path == "/" else ""
     doc = f"""<!doctype html>
 <html lang="en-AU">
 <head>
@@ -71,7 +72,8 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme=""):
 {hero_bootstrap}
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body class="{theme}">
+<body class="{theme}{' home' if path == '/' else ''}">
+{early_iframe}
 <header class="site-head">
   <div class="row">
     <a class="logo" href="/" aria-label="UNITED Nights home"><img src="{HEAD_LOGO}" alt="UNITED Nights" width="210" height="42"></a>
@@ -163,7 +165,7 @@ def form(kind, button, thanks, message=False, dark=False):
 
 def home():
     body = f"""<section class="bleed hero dark">
-  <div class="media" aria-hidden="true"><img class="hero-poster" src="https://i.ytimg.com/vi/hqK0pqV-c9c/maxresdefault.jpg" alt="" fetchpriority="high" decoding="async"><iframe id="hero-background" src="https://www.youtube.com/embed/hqK0pqV-c9c?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=hqK0pqV-c9c&controls=0&playsinline=1&rel=0&disablekb=1&iv_load_policy=3&cc_load_policy=0" title="" tabindex="-1" loading="eager" allow="autoplay; encrypted-media"></iframe></div>
+  
   <div class="hero-mark" role="img" aria-label="UNITED Nights">
     <img class="united-word" src="/assets/united-wordmark-white.png" alt="" aria-hidden="true" width="1000" height="200" fetchpriority="high">
     <img class="nights-script" src="/assets/nights-final.png" data-animation="/assets/nights-original.webp" alt="" aria-hidden="true" width="1216" height="499" fetchpriority="high">
