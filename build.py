@@ -16,7 +16,7 @@ Content markup (one paragraph per blank-line block):
   **bold**                bold text inside a paragraph
   [text](url)             link inside a paragraph
 """
-import html, re, pathlib, datetime
+import html, re, pathlib, datetime, json
 
 ROOT = pathlib.Path(__file__).parent
 SITE = "https://unitednights.com"
@@ -25,6 +25,48 @@ HEAD_LOGO = CDN + "/3a0d35ff-cf40-4f06-9450-b90b574a8301/UNITED-Nights-Logo.png?
 LM_LOGO = CDN + "/2416aef0-200d-46e7-bf0f-f6e0e8497199/LUKE-MUNNS-LOGO-footer.png?format=750w"
 OG_DEFAULT = "https://static1.squarespace.com/static/6a6464a7513b006c5a13f402/t/6a8668b331e02f46bf595841/1787193523022/united-nights-facebook.jpg?format=1500w"
 IG = "https://instagram.com/unitednights.co"
+
+# Search metadata for the public pages. /history is authored separately.
+SEO_PAGES = {
+  "/": {
+    "title": "UNITED Nights | Luke Munns, Hillsong UNITED Founding Member",
+    "description": "UNITED Nights is an independent continuation of the UNITED worship story, led by Luke Munns, founding member and original drummer of Hillsong UNITED. Not affiliated with Hillsong."
+  },
+  "/stories": {
+    "title": "UNITED Nights Stories | Worship, Music & the UNITED Legacy",
+    "description": "Stories of Christian worship, music, unity and a new independent chapter led by Hillsong UNITED founding member Luke Munns."
+  },
+  "/stories/why-united-nights": {
+    "title": "Why UNITED Nights? | A New Independent Worship Chapter",
+    "description": "Why UNITED Nights? Luke Munns, a founding member of Hillsong UNITED, shares the vision for an independent continuation with new worship gatherings, songs and voices."
+  },
+  "/stories/the-blessing-movement": {
+    "title": "The Blessing Australia | Luke Munns & UNITED Nights",
+    "description": "The story of The Blessing Australia and how Luke Munns helped bring churches, worshippers and creative voices together across Australia."
+  },
+  "/contact": {
+    "title": "Contact UNITED Nights | Bookings & Worship Collaborations",
+    "description": "Contact UNITED Nights for Christian worship gatherings, event bookings, music collaborations, media and partnership enquiries. An independent project led by Luke Munns."
+  },
+  "/legal-disclaimer": {
+    "title": "UNITED Nights Legal Disclaimer | Independent of Hillsong",
+    "description": "Read the UNITED Nights legal disclaimer, including its independent status, historical links to Hillsong UNITED and intellectual property information."
+  },
+  "/privacy": {
+    "title": "UNITED Nights Privacy Policy | Your Information",
+    "description": "Learn how UNITED Nights collects, uses and protects your information, manages email updates and handles privacy enquiries."
+  },
+  "/history": {
+    "title": "Hillsong UNITED Origins & History | UNITED: The Story",
+    "description": "Explore the history and early years of Hillsong UNITED, including its music and original logotype created by founding drummer Luke Munns. An independent retrospective."
+  },
+  "/404": {
+    "title": "Page Not Found | UNITED Nights",
+    "description": "This page could not be found. Return to the UNITED Nights homepage."
+  }
+}
+SEO_ORG_DESCRIPTION = "Independent Christian worship project led by Luke Munns, a founding member and original drummer of Hillsong UNITED. An independent continuation of the UNITED worship story, not affiliated with Hillsong."
+
 # Aktiv Grotesk loads from Luke's own Adobe Fonts web project (licensed for these domains at fonts.adobe.com).
 # Never add font files to this public repo.
 ADOBE_KIT = "jcd6pcn"  # Adobe Fonts web project "UNITED Nights website" on Luke's Adobe account
@@ -43,12 +85,66 @@ def inline(s):
     return re.sub(r"\[([^\]]+)\]\(([^)]+)\)", lambda m: f'<a href="{m.group(2)}">{m.group(1)}</a>', s)
 
 
-def page(path, title, body, desc="", og=OG_DEFAULT, theme=""):
+def seo_head(path, title, desc, og, url, published=None, author=None, headline=None):
+    tags = [f'<title>{e(title)}</title>',
+            f'<meta name="description" content="{e(desc)}">',
+            f'<meta name="robots" content="{"noindex,follow" if path == "/404" else "index,follow"}">']
+    if path == "/404":
+        return "\n".join(tags)
+    image_alt = headline or "UNITED Nights independent Christian worship project"
+    tags += [f'<link rel="canonical" href="{url}">',
+             '<meta property="og:locale" content="en_AU">',
+             '<meta property="og:site_name" content="UNITED Nights">',
+             f'<meta property="og:title" content="{e(title)}">',
+             f'<meta property="og:description" content="{e(desc)}">',
+             f'<meta property="og:image" content="{e(og)}">',
+             f'<meta property="og:image:alt" content="{e(image_alt)}">',
+             f'<meta property="og:url" content="{url}">',
+             f'<meta property="og:type" content="{"article" if published else "website"}">']
+    if published:
+        tags.append(f'<meta property="article:published_time" content="{published}">')
+    tags += ['<meta name="twitter:card" content="summary_large_image">',
+             f'<meta name="twitter:title" content="{e(title)}">',
+             f'<meta name="twitter:description" content="{e(desc)}">',
+             f'<meta name="twitter:image" content="{e(og)}">',
+             f'<meta name="twitter:image:alt" content="{e(image_alt)}">']
+    org = {"@type": "Organization", "@id": SITE + "/#organization",
+           "name": "UNITED Nights", "url": SITE + "/",
+           "description": SEO_ORG_DESCRIPTION,
+           "founder": {"@type": "Person", "name": "Luke Munns",
+                       "description": "Founding member and original drummer of Hillsong UNITED."},
+           "sameAs": [IG]}
+    site = {"@type": "WebSite", "@id": SITE + "/#website", "url": SITE + "/",
+            "name": "UNITED Nights",
+            "publisher": {"@id": SITE + "/#organization"}, "inLanguage": "en-AU"}
+    kind = {"/stories": "CollectionPage", "/contact": "ContactPage",
+            "/history": "AboutPage"}.get(path, "WebPage")
+    webpage = {"@type": kind, "@id": url + "#webpage", "url": url,
+               "name": title, "description": desc, "inLanguage": "en-AU",
+               "isPartOf": {"@id": SITE + "/#website"},
+               "about": {"@id": SITE + "/#organization"}}
+    nodes = [org, site, webpage]
+    if published:
+        webpage["mainEntity"] = {"@id": url + "#article"}
+        nodes.append({"@type": "BlogPosting", "@id": url + "#article",
+                      "headline": headline, "description": desc, "datePublished": published,
+                      "author": {"@type": "Person", "name": author},
+                      "publisher": {"@id": SITE + "/#organization"},
+                      "mainEntityOfPage": {"@id": url + "#webpage"}, "image": og})
+    structured = json.dumps({"@context": "https://schema.org", "@graph": nodes},
+                            ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    tags.append(f'<script type="application/ld+json">{structured}</script>')
+    return "\n".join(tags)
+
+
+def page(path, title, body, desc="", og=OG_DEFAULT, theme="", published=None, author=None, headline=None):
+    seo = SEO_PAGES.get(path, {})
+    title, desc = seo.get("title", title), seo.get("description", desc)
     nav = "".join(
         f'<a href="{href}"{" aria-current=page" if (href == path or (href != "/" and path.startswith(href + "/"))) else ""}>{label}</a>'
         for label, href in NAV)
     mnav = "".join(f'<a href="{href}">{label}</a>' for label, href in NAV)
-    url = SITE + (path if path != "/" else "")
+    url = SITE + (path if path != "/" else "/")
     font = f'\n<link rel="stylesheet" href="https://use.typekit.net/{ADOBE_KIT}.css">' if ADOBE_KIT else ""
     hero_head = "<link rel=\"preconnect\" href=\"https://www.youtube.com\">\n<link rel=\"preconnect\" href=\"https://www.google.com\">\n<link rel=\"preconnect\" href=\"https://i.ytimg.com\">\n<link rel=\"preconnect\" href=\"https://s.ytimg.com\">\n<script src=\"https://www.youtube.com/iframe_api\" async></script>\n" if path == "/" else ""
     hero_bootstrap = "<script>(function(){\n  var root=document.documentElement;\n  root.classList.add('nights-motion','hero-wait');\n  var started=false;\n  window.startUnitedHero=function(){\n    if(started) return;\n    started=true;\n    root.classList.remove('hero-wait');\n    root.classList.add('hero-started');\n    window.dispatchEvent(new Event('united-hero-start'));\n  };\n  window.setTimeout(window.startUnitedHero,2500);\n})();</script>" if path == "/" else "<script>document.documentElement.classList.add('nights-motion');</script>"
@@ -58,16 +154,7 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme=""):
 <head>
 {hero_head}<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{e(title)}</title>
-<meta name="description" content="{e(desc)}">
-<link rel="canonical" href="{url}">
-<meta property="og:site_name" content="UNITED Nights">
-<meta property="og:title" content="{e(title)}">
-<meta property="og:description" content="{e(desc)}">
-<meta property="og:image" content="{e(og)}">
-<meta property="og:url" content="{url}">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">{font}
+{seo_head(path, title, desc, og, url, published, author, headline)}{font}
 <link rel="icon" href="https://images.squarespace-cdn.com/content/v1/6a6464a7513b006c5a13f402/e97d65ae-8eb5-45a3-b177-e178b9c9b715/favicon.ico">
 {hero_bootstrap}
 <link rel="stylesheet" href="/assets/site.css">
@@ -178,6 +265,7 @@ def home():
   <p>A generation hungry and desperate for <strong>the tangible presence of God</strong>, lifting up the name of Jesus with one heart, one voice and one sound.</p>
   <p><strong>THE SOUND OF FREEDOM.</strong><br><strong>THE SOUND OF CHAINS FALLING.</strong><br><strong>THE SOUND OF REVIVAL.</strong></p>
   <p>In 2027, <strong>a new and independent chapter begins.</strong></p>
+  <p>Led by Luke Munns, a founding member and original drummer of Hillsong UNITED, UNITED Nights is an independent continuation of the UNITED worship story, not an official Hillsong project.</p>
   <p><strong>UNITED Nights</strong> is a new gathering of worshippers, songwriters, musicians and creatives seeking God and making space for encounters with His presence.</p>
   <p>We are not trying to recreate yesterday. We honour what God has done in the past, but we are looking forward to the future - <strong>a clean slate, new wine and a fresh outpouring of the Holy Spirit.</strong></p>
   <p>We are simply making room for <strong>whatever God wants to do next.</strong></p>
@@ -234,7 +322,7 @@ def stories():
   <h3>UNITED STORIES</h3>
   <p>Stories from where we've been, what we're building now, and what's ahead.</p>
 </div></article>
-<nav class="pager" aria-label="More stories"><div class="row">{nav}</div></nav>""", m["excerpt"], og=m["image"] + "?format=1500w", theme="light")
+<nav class="pager" aria-label="More stories"><div class="row">{nav}</div></nav>""", m["excerpt"], og=m["image"] + "?format=1500w", theme="light", published=m["date"], author=m["author"], headline=m["title"])
 
 
 def contact():
@@ -279,5 +367,15 @@ def notfound():
 </div></section>""", "", theme="light")
 
 
+def search_files():
+    paths = ["/", "/stories"] + [f"/stories/{slug}" for slug in POSTS] + ["/contact", "/legal-disclaimer", "/privacy", "/history"]
+    urls = [SITE + (path if path != "/" else "/") for path in paths]
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    xml += "".join(f"  <url><loc>{e(url)}</loc></url>\n" for url in urls)
+    xml += "</urlset>\n"
+    (ROOT / "sitemap.xml").write_text(xml, encoding="utf-8")
+    (ROOT / "robots.txt").write_text("User-agent: *\nAllow: /\n\nSitemap: https://unitednights.com/sitemap.xml\n", encoding="utf-8")
+
+
 if __name__ == "__main__":
-    home(); stories(); contact(); legal(); privacy(); notfound()
+    home(); stories(); contact(); legal(); privacy(); notfound(); search_files()
