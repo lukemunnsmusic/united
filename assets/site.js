@@ -214,46 +214,47 @@ function createNightsPlayback(art,motion){
 
 // Lightweight background-only parallax, with static no-JS/reduced-motion fallbacks.
 (function(){
-  var section=document.querySelector('.join'), motion=window.matchMedia('(prefers-reduced-motion: reduce)');
-  if(!section) return;
-  var media=section.querySelector('.media'), image=media && media.querySelector('img'), frame=0, progress=null, imageHeight=0;
-  if(!image) return;
-  function measure(){
-    if(!image.naturalWidth) return;
-    var rect=section.getBoundingClientRect();
-    imageHeight=Math.max(rect.height,rect.width*image.naturalHeight/image.naturalWidth);
-    media.style.setProperty('--parallax-height',imageHeight+'px');
-    media.style.setProperty('--parallax-width',(imageHeight*image.naturalWidth/image.naturalHeight)+'px');
-    schedule();
-  }
-  function update(){
-    frame=0;
-    if(motion.matches || !imageHeight) return;
-    var rect=section.getBoundingClientRect(), height=window.innerHeight;
-    if(rect.bottom<0 || rect.top>height || !image.naturalWidth) return;
-    // Match Squarespace's 30% intensity / 90-degree background effect.
-    // Normalize to the available scroll range, including the nearby page end.
-    var top=rect.top+window.scrollY, after=document.documentElement.scrollHeight-top-rect.height;
-    var before=Math.min(top,height), end=Math.min(after,height);
-    var range=before+rect.height+end-height;
-    var target=Math.max(0,Math.min(1,range>0?(before-rect.top)/range:.5));
-    var delta=progress===null?0:target-progress;
-    progress=progress===null || Math.abs(delta)<.01?target:progress+delta*.1;
-    var offset=(.5-progress)*imageHeight*.15/.85;
-    media.style.setProperty('--parallax-y',offset.toFixed(2)+'px');
-    if(Math.abs(target-progress)>=.01) frame=requestAnimationFrame(update);
-  }
-  function schedule(){if(!motion.matches && !frame) frame=requestAnimationFrame(update);}
-  function configure(){
-    section.classList.toggle('has-parallax',!motion.matches);
-    if(motion.matches){cancelAnimationFrame(frame);frame=0;progress=null;media.style.removeProperty('--parallax-y');}
-    else schedule();
-  }
-  window.addEventListener('scroll',schedule,{passive:true});
-  window.addEventListener('resize',measure,{passive:true});
-  window.addEventListener('pageshow',measure);
-  image.addEventListener('load',measure);
-  if('ResizeObserver' in window) new ResizeObserver(measure).observe(section);
-  motion.addEventListener('change',configure);
-  measure();configure();
+  var motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll('.join, .banner').forEach(function(section){
+    var media=section.querySelector('.media'), image=media && media.querySelector('img'), frame=0, progress=null, imageHeight=0;
+    if(!image) return;
+    function measure(){
+      if(!image.naturalWidth) return;
+      var rect=section.getBoundingClientRect();
+      imageHeight=Math.max(rect.height,rect.width*image.naturalHeight/image.naturalWidth);
+      media.style.setProperty('--parallax-height',imageHeight+'px');
+      media.style.setProperty('--parallax-width',(imageHeight*image.naturalWidth/image.naturalHeight)+'px');
+      schedule();
+    }
+    function update(){
+      frame=0;
+      if(motion.matches || !imageHeight) return;
+      var rect=section.getBoundingClientRect(), height=window.innerHeight;
+      if(rect.bottom<0 || rect.top>height || !image.naturalWidth) return;
+      // Match Squarespace's 30% intensity / 90-degree background effect.
+      // Normalize to the available scroll range, including the nearby page end.
+      var top=rect.top+window.scrollY, after=document.documentElement.scrollHeight-top-rect.height;
+      var before=Math.min(top,height), end=Math.min(after,height);
+      var range=before+rect.height+end-height;
+      var target=Math.max(0,Math.min(1,range>0?(before-rect.top)/range:.5));
+      var delta=progress===null?0:target-progress;
+      progress=progress===null || Math.abs(delta)<.01?target:progress+delta*.1;
+      var offset=(.5-progress)*imageHeight*.15/.85;
+      media.style.setProperty('--parallax-y',offset.toFixed(2)+'px');
+      if(Math.abs(target-progress)>=.01) frame=requestAnimationFrame(update);
+    }
+    function schedule(){if(!motion.matches && !frame) frame=requestAnimationFrame(update);}
+    function configure(){
+      section.classList.toggle('has-parallax',!motion.matches);
+      if(motion.matches){cancelAnimationFrame(frame);frame=0;progress=null;media.style.removeProperty('--parallax-y');}
+      else schedule();
+    }
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',measure,{passive:true});
+    window.addEventListener('pageshow',measure);
+    image.addEventListener('load',measure);
+    if('ResizeObserver' in window) new ResizeObserver(measure).observe(section);
+    motion.addEventListener('change',configure);
+    measure();configure();
+  });
 })();
