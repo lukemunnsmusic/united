@@ -180,7 +180,7 @@ def home():
   <p><strong>JOIN US ON THE JOURNEY.</strong></p>
   <p><strong>COME WITH US ON A NEW ADVENTURE.</strong></p>
 </div></div></section>
-<section class="bleed join dark fine-divider">
+<section class="bleed join dark">
   <div class="media" aria-hidden="true"><img src="{CDN}/7e289948-8475-493e-90b6-b7a68c406ac9/united-form-bg.jpg?format=2500w" alt="" loading="lazy"></div><div class="shade"></div>
   <div class="frame" style="width:100%">
     <div class="col c-wide" style="margin-bottom:31px"><p class="large"><strong>THE JOURNEY IS JUST BEGINNING</strong></p><p>Receive occasional updates about new music, gatherings and what comes next.</p></div>
