@@ -29,7 +29,7 @@ IG = "https://instagram.com/unitednights.co"
 SEO_PAGES = {
   "/": {
     "title": "UNITED Nights | Luke Munns, Hillsong UNITED Founding Member",
-    "description": "UNITED Nights is an independent continuation of the UNITED worship story, led by Luke Munns, founding member and original drummer of Hillsong UNITED. Not affiliated with Hillsong."
+    "description": "UNITED Nights is an independent continuation of the UNITED worship story, led by Luke Munns, founding member and original drummer of Hillsong UNITED."
   },
   "/stories": {
     "title": "UNITED Nights Stories | Worship, Music & the UNITED Legacy",
@@ -64,7 +64,7 @@ SEO_PAGES = {
     "description": "This page could not be found. Return to the UNITED Nights homepage."
   }
 }
-SEO_ORG_DESCRIPTION = "Independent Christian worship project led by Luke Munns, a founding member and original drummer of Hillsong UNITED. An independent continuation of the UNITED worship story, not affiliated with Hillsong."
+SEO_ORG_DESCRIPTION = "Independent Christian worship project led by Luke Munns, a founding member and original drummer of Hillsong UNITED. An independent continuation of the UNITED worship story."
 
 # Aktiv Grotesk loads from Luke's own Adobe Fonts web project (licensed for these domains at fonts.adobe.com).
 # Never add font files to this public repo.
@@ -178,7 +178,7 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme="", published=None, au
   </div>
   <div class="txt">
     <p>&copy; {datetime.date.today().year} UNITED Nights. All rights reserved.</p>
-    <p>UNITED Nights is an independent project led by Luke Munns, signed to <a href="https://worshipcollective.co">WorshipCollective.co</a>. It is not affiliated with Hillsong.</p>
+    <p>UNITED Nights is an independent project led by Luke Munns, signed to <a href="https://worshipcollective.co">WorshipCollective.co</a>. Not affiliated with Hillsong.</p>
     <p class="links"><a href="/privacy">Privacy</a> | <a href="/legal-disclaimer">Legal</a> | <a href="/contact">Contact</a> | <a href="{IG}">Instagram</a></p>
   </div>
   <a class="lm" href="https://lukemunnsmusic.com/" aria-label="LUKE MUNNS"><img src="{LM_LOGO}" alt="LUKE MUNNS" width="330" height="29" loading="lazy"></a>
@@ -264,7 +264,7 @@ def home():
   <p>A generation hungry and desperate for <strong>the tangible presence of God</strong>, lifting up the name of Jesus with one heart, one voice and one sound.</p>
   <p><strong>THE SOUND OF FREEDOM.</strong><br><strong>THE SOUND OF CHAINS FALLING.</strong><br><strong>THE SOUND OF REVIVAL.</strong></p>
   <p>In 2027, <strong>a new and independent chapter begins.</strong></p>
-  <p>Led by Luke Munns, a founding member and original drummer of Hillsong UNITED, UNITED Nights is an independent continuation of the UNITED worship story, not an official Hillsong project.</p>
+  <p>Led by Luke Munns, a founding member and original drummer of Hillsong UNITED, UNITED Nights is an independent continuation of the UNITED worship story.</p>
   <p><strong>UNITED Nights</strong> is a new gathering of worshippers, songwriters, musicians and creatives seeking God and making space for encounters with His presence.</p>
   <p>We are not trying to recreate yesterday. We honour what God has done in the past, but we are looking forward to the future - <strong>a clean slate, new wine and a fresh outpouring of the Holy Spirit.</strong></p>
   <p>We are simply making room for <strong>whatever God wants to do next.</strong></p>
