@@ -178,7 +178,7 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme="", published=None, au
   </div>
   <div class="txt">
     <p>&copy; {datetime.date.today().year} UNITED Nights. All rights reserved.</p>
-    <p>Not affiliated with Hillsong.</p>
+    <p>UNITED Nights is an independent project led by Luke Munns, signed to <a href="https://worshipcollective.co">WorshipCollective.co</a>. Not affiliated with Hillsong.</p>
     <p class="links"><a href="/privacy">Privacy</a> | <a href="/legal-disclaimer">Legal</a> | <a href="/contact">Contact</a> | <a href="{IG}">Instagram</a></p>
   </div>
   <a class="lm" href="https://lukemunnsmusic.com/" aria-label="LUKE MUNNS"><img src="{LM_LOGO}" alt="LUKE MUNNS" width="330" height="29" loading="lazy"></a>
