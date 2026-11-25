@@ -70,7 +70,7 @@ SEO_ORG_DESCRIPTION = "Independent Christian worship project led by Luke Munns, 
 # Never add font files to this public repo.
 ADOBE_KIT = "jcd6pcn"  # Adobe Fonts web project "UNITED Nights website" on Luke's Adobe account
 
-NAV = [("HOME", "/"), ("STORIES", "/stories"), ("CONTACT", "/contact")]
+NAV = [("HOME", "/"), ("STORIES", "/stories"), ("HISTORY", "/history"), ("CONTACT", "/contact")]
 IG_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zM12 0C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.2 4.4 2.6 6.8 7 7 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c4.4-.2 6.8-2.6 7-7 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.2-4.4-2.6-6.8-7-7C15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9z"/></svg>'
 CARET_L = '<svg viewBox="0 0 9 16" aria-hidden="true"><polyline points="7.3,14.7 2.5,8 7.3,1.2"/></svg>'
 CARET_R = '<svg viewBox="0 0 9 16" aria-hidden="true"><polyline points="1.6,1.2 6.5,7.9 1.6,14.7"/></svg>'
@@ -158,7 +158,7 @@ def page(path, title, body, desc="", og=OG_DEFAULT, theme="", published=None, au
 {hero_bootstrap}
 <link rel="stylesheet" href="/assets/site.css">
 </head>
-<body class="{theme}{' home' if path == '/' else ''}">
+<body class="{' '.join(c for c in (theme, 'home' if path == '/' else '') if c)}">
 {early_iframe}
 <header class="site-head">
   <div class="row">
@@ -373,7 +373,7 @@ def search_files():
     xml += "".join(f"  <url><loc>{e(url)}</loc></url>\n" for url in urls)
     xml += "</urlset>\n"
     (ROOT / "sitemap.xml").write_text(xml, encoding="utf-8")
-    (ROOT / "robots.txt").write_text("User-agent: *\nAllow: /\n\nSitemap: https://unitednights.com/sitemap.xml\n", encoding="utf-8")
+    (ROOT / "robots.txt").write_text("User-agent: *\nAllow: /\nDisallow: /release\n\nSitemap: https://unitednights.com/sitemap.xml\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
